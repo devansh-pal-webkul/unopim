@@ -5,9 +5,11 @@ namespace Webkul\Admin\Http\Controllers\Catalog\Options;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Webkul\Admin\Http\Controllers\Controller;
+use Webkul\Attribute\Repositories\AttributeFamilyRepository;
 use Webkul\Attribute\Repositories\AttributeOptionRepository;
 use Webkul\Category\Repositories\CategoryFieldOptionRepository;
 use Webkul\Core\Eloquent\Repository;
+use Webkul\Core\Eloquent\TranslatableModel;
 
 class AjaxOptionsController extends Controller
 {
@@ -18,7 +20,8 @@ class AjaxOptionsController extends Controller
      */
     public function __construct(
         protected CategoryFieldOptionRepository $categoryFieldOptionsRepository,
-        protected AttributeOptionRepository $attributeOptionsRepository
+        protected AttributeOptionRepository $attributeOptionsRepository,
+        protected AttributeFamilyRepository $attributeFamilyRepository
     ) {}
 
     /**
@@ -40,7 +43,7 @@ class AjaxOptionsController extends Controller
         $formattedoptions = [];
 
         foreach ($options as $option) {
-            $translatedOptionLabel = $option->translate($currentLocaleCode)?->label;
+            $translatedOptionLabel = $this->getTranslatedLabel($currentLocaleCode, $option);
 
             $formattedoptions[] = [
                 'id'    => $option->id,
@@ -88,7 +91,7 @@ class AjaxOptionsController extends Controller
             );
         }
 
-        return $repository->orderBy('id')->paginate(self::DEFAULT_PER_PAGE, ['*'], 'page', $page);
+        return $repository->orderBy('id')->paginate(self::DEFAULT_PER_PAGE, ['*'], 'paginate', $page);
     }
 
     /**
@@ -100,7 +103,18 @@ class AjaxOptionsController extends Controller
         return match ($entityName) {
             'attribute'      => $this->attributeOptionsRepository,
             'category_field' => $this->categoryFieldOptionsRepository,
+            'family'         => $this->attributeFamilyRepository,
             default          => throw new \Exception('Not implemented for '.$entityName)
         };
+    }
+
+    /**
+     * Get translated label for the entity
+     */
+    protected function getTranslatedLabel(string $currentLocaleCode, TranslatableModel $option): string
+    {
+        $translation = $option->translate($currentLocaleCode);
+
+        return $translation?->label ?? $translation?->name;
     }
 }

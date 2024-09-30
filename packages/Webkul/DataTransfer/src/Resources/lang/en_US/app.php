@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'Super attribute with code: \'%s\' not found or does not belong to the attribute family: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'Attribute Family',
+                'status'           => 'Status',
+                'type'             => 'Product Type',
+            ],
         ],
         'categories' => [
             'title' => 'Categories',

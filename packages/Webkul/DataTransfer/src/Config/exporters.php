@@ -32,6 +32,36 @@ return [
                     'title'    => 'With Media',
                     'required' => false,
                     'type'     => 'boolean',
+                ], [
+                    'name'     => 'sku',
+                    'title'    => 'data_transfer::app.exporters.products.filters.sku',
+                    'required' => false,
+                    'type'     => 'textarea',
+                ], [
+                    'name'         => 'attribute_family',
+                    'title'        => 'data_transfer::app.exporters.products.filters.attribute_family',
+                    'required'     => false,
+                    'type'         => 'select',
+                    'async'        => true,
+                    'track_by'     => 'code',
+                    'label_by'     => 'label',
+                    'query_params' => [
+                        'entityName' => 'family',
+                    ],
+                ], [
+                    'name'     => 'status',
+                    'title'    => 'data_transfer::app.exporters.products.filters.status',
+                    'required' => false,
+                    'type'     => 'select',
+                    'options'  => [
+                        [
+                            'label' => 'admin::app.common.enable',
+                            'value' => "'true'",
+                        ], [
+                            'label' => 'admin::app.common.disable',
+                            'value' => "'false'",
+                        ],
+                    ],
                 ],
             ],
         ],
