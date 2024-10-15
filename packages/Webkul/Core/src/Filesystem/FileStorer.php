@@ -7,12 +7,15 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Webkul\Core\Traits\Sanitizer;
 
 /**
  * Filestorer class allows storing of file through the Storage Facade
  */
 class FileStorer
 {
+    use Sanitizer;
+
     const HASHED_FOLDER_NAME_KEY = 'hashedFolderName';
 
     /**
@@ -39,6 +42,8 @@ class FileStorer
         $hashedFolderName = Arr::pull($options, self::HASHED_FOLDER_NAME_KEY);
 
         $path = $hashedFolderName ? $this->addHashedFolderName($path) : $path;
+
+        $file = $this->sanitizeFile($file);
 
         return Storage::disk($disk)->putFileAs($path, $file, $name, $options);
     }

@@ -4,6 +4,7 @@ namespace Webkul\Core\Traits;
 
 use enshrined\svgSanitize\Sanitizer as MainSanitizer;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\File\File;
 
 trait Sanitizer
 {
@@ -14,6 +15,26 @@ trait Sanitizer
         'image/svg',
         'image/svg+xml',
     ];
+
+    /**
+     * Sanitize file if it is of type svg
+     */
+    public function sanitizeFile(File $file)
+    {
+        if (! $this->checkMimeType($file->getMimeType())) {
+            return $file;
+        }
+
+        $sanitizer = new MainSanitizer;
+
+        $cleanedFile = $sanitizer->sanitize($file->getContent());
+
+        $path = $file->getPathname();
+
+        file_put_contents($path, $cleanedFile);
+
+        return $path;
+    }
 
     /**
      * Sanitize SVG file.
