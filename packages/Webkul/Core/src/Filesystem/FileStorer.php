@@ -43,9 +43,11 @@ class FileStorer
 
         $path = $hashedFolderName ? $this->addHashedFolderName($path) : $path;
 
-        $file = $this->sanitizeFile($file);
+        $path = Storage::disk($disk)->putFileAs($path, $file, $name, $options);
 
-        return Storage::disk($disk)->putFileAs($path, $file, $name, $options);
+        $this->sanitizeSVG($path, $file->getMimeType());
+
+        return $path;
     }
 
     /**

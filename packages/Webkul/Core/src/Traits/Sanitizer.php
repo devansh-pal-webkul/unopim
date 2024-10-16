@@ -17,34 +17,11 @@ trait Sanitizer
     ];
 
     /**
-     * Sanitize file if it is of type svg
-     */
-    public function sanitizeFile(File $file)
-    {
-        if (! $this->checkMimeType($file->getMimeType())) {
-            return $file;
-        }
-
-        $sanitizer = new MainSanitizer;
-
-        $cleanedFile = $sanitizer->sanitize($file->getContent());
-
-        $path = $file->getPathname();
-
-        file_put_contents($path, $cleanedFile);
-
-        return $path;
-    }
-
-    /**
      * Sanitize SVG file.
-     *
-     * @param  string  $path
-     * @return void
      */
-    public function sanitizeSVG($path, $mimeType)
+    public function sanitizeSVG(string $path, ?string $mimeType): void
     {
-        if ($this->checkMimeType($mimeType)) {
+        if ($this->isFileSVG($mimeType)) {
             /* sanitizer instance */
             $sanitizer = new MainSanitizer;
 
@@ -57,12 +34,9 @@ trait Sanitizer
     }
 
     /**
-     * Sanitize SVG file.
-     *
-     * @param  string  $path
-     * @return void
+     * Check file mime type
      */
-    public function checkMimeType($mimeType)
+    public function isFileSVG(?string $mimeType): bool
     {
         return in_array($mimeType, $this->mimeTypes);
     }
