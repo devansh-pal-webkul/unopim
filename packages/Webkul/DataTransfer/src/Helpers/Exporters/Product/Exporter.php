@@ -9,6 +9,7 @@ use Webkul\Core\Repositories\ChannelRepository;
 use Webkul\DataTransfer\Contracts\JobTrackBatch as JobTrackBatchContract;
 use Webkul\DataTransfer\Helpers\Export;
 use Webkul\DataTransfer\Helpers\Exporters\AbstractExporter;
+use Webkul\DataTransfer\Helpers\Filters\FiltersApplier;
 use Webkul\DataTransfer\Jobs\Export\File\FlatItemBuffer as FileExportFileBuffer;
 use Webkul\DataTransfer\Repositories\JobTrackBatchRepository;
 
@@ -39,6 +40,7 @@ class Exporter extends AbstractExporter
         protected FileExportFileBuffer $exportFileBuffer,
         protected ChannelRepository $channelRepository,
         protected AttributeRepository $attributeRepository,
+        protected FiltersApplier $filtersApplier
     ) {
         parent::__construct($exportBatchRepository, $exportFileBuffer);
     }
@@ -87,11 +89,15 @@ class Exporter extends AbstractExporter
      */
     protected function getResults()
     {
-        return $this->source->with([
+        $source = $this->source->with([
             'attribute_family',
             'parent',
             'super_attributes',
-        ])->orderBy('id', 'desc')->all()?->getIterator();
+        ]);
+
+        $this->filtersApplier->applyFilters($source, $this->getFilters());
+
+        return $source->get()?->getIterator();
     }
 
     /**
