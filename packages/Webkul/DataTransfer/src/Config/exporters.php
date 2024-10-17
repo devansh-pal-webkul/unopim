@@ -33,7 +33,7 @@ return [
                     'required' => false,
                     'type'     => 'boolean',
                 ], [
-                    'name'     => 'sku',
+                    'name'     => 'identifier',
                     'title'    => 'data_transfer::app.exporters.products.filters.sku',
                     'required' => false,
                     'type'     => 'textarea',
@@ -41,12 +41,26 @@ return [
                     'name'         => 'attribute_family',
                     'title'        => 'data_transfer::app.exporters.products.filters.attribute_family',
                     'required'     => false,
-                    'type'         => 'select',
+                    'type'         => 'multiselect',
                     'async'        => true,
-                    'track_by'     => 'code',
+                    'track_by'     => 'id',
                     'label_by'     => 'label',
                     'query_params' => [
                         'entityName' => 'family',
+                    ],
+                ], [
+                    'name'         => 'product_type',
+                    'title'        => 'data_transfer::app.exporters.products.filters.product_type',
+                    'required'     => false,
+                    'type'         => 'select',
+                    'options'      => [
+                        [
+                            'label' => 'Simple',
+                            'value' => 'simple',
+                        ], [
+                            'label' => 'Configurable',
+                            'value' => 'configurable',
+                        ],
                     ],
                 ], [
                     'name'     => 'status',
