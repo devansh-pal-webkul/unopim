@@ -215,6 +215,11 @@
                 </v-field>
             </template>
 
+            <template v-else-if="'attribute_filters' === filterField.type">
+                <x-admin::filters.attribute-filters>
+                </x-admin::filters.attribute-filters>
+            </template>
+
             <template v-else>
                 <v-field
                     v-slot="{ field, errors }"

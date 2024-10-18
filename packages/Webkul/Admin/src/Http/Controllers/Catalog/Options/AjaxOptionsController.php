@@ -7,6 +7,7 @@ use Illuminate\Http\JsonResponse;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Repositories\AttributeFamilyRepository;
 use Webkul\Attribute\Repositories\AttributeOptionRepository;
+use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Category\Repositories\CategoryFieldOptionRepository;
 use Webkul\Core\Eloquent\Repository;
 use Webkul\Core\Eloquent\TranslatableModel;
@@ -21,7 +22,8 @@ class AjaxOptionsController extends Controller
     public function __construct(
         protected CategoryFieldOptionRepository $categoryFieldOptionsRepository,
         protected AttributeOptionRepository $attributeOptionsRepository,
-        protected AttributeFamilyRepository $attributeFamilyRepository
+        protected AttributeFamilyRepository $attributeFamilyRepository,
+        protected AttributeRepository $attributeRepository
     ) {}
 
     /**
@@ -101,6 +103,7 @@ class AjaxOptionsController extends Controller
     private function getRepository(string $entityName): Repository
     {
         return match ($entityName) {
+            'attributes'     => $this->attributeRepository,
             'attribute'      => $this->attributeOptionsRepository,
             'category_field' => $this->categoryFieldOptionsRepository,
             'family'         => $this->attributeFamilyRepository,

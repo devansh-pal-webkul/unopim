@@ -76,6 +76,11 @@ return [
                             'value' => "'false'",
                         ],
                     ],
+                ], [
+                    'name'     => 'attribute_filters',
+                    'title'    => 'Attribute Filters',
+                    'required' => false,
+                    'type'     => 'attribute_filters',
                 ],
             ],
         ],
