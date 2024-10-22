@@ -1,12 +1,19 @@
+@props([
+    'filterValues' => [],
+    'old'          => [],
+    'display'      => true,
+])
 
-<v-attribute-filters></v-attribute-filters>
+@if ($display) 
+    <v-attribute-filters :filter-values="@json($filterValues)" old-values="@json($old)"></v-attribute-filters>
+@endif
 
-@push('scripts')
+@pushOnce('scripts')
     <script type="text/x-template" id="v-attribute-filters-template">
         <div class="flex gap-2">
             <x-admin::form.control-group.control
                 class="flex-1"
-                name="attribute_filters"
+                name="filters[attribute_filters]"
                 type="select"
                 async="true"
                 ref="filterSelectControl"
@@ -24,28 +31,70 @@
             </span>
         </div>
 
+        @php
+            $optionsJson = [
+                ['label' => 'Equal to', 'value' => '='],
+                ['label' => 'Not equal to', 'value' => '!='],
+                ['label' => 'Contains', 'value' => 'like'],
+            ];
 
-        <div v-for="filter in attributeFilters" class="grid grid-cols-3 mt-3 gap-2">
-            <x-admin::form.control-group.label v-text="filter.label" />
+            $optionsJson = json_encode($optionsJson);
+        @endphp
 
-            @php
-                $optionsJson = [
-                    ['label' => 'Equal to', 'value' => '='],
-                    ['label' => 'Not equal to', 'value' => '!='],
-                    ['label' => 'Like', 'value' => '!='],
-                ];
-            @endphp
+        <div v-for="filter in attributeFilters" class="grid gap-1">
+            <x-admin::form.control-group.label class="mt-3" v-text="filter.label" />
 
-            <x-admin::form.control-group.control
-                type="select"
-                ::name="'filters[' + filter.code + '][operator]'"
-                :options="json_encode($optionsJson)"
-            />
+            <div class="flex gap-2 items-center">
+                <div class="flex-0">
+                    <x-admin::form.control-group.control
+                        type="select"
+                        ::name="'filters[attribute_filters][' + filter.code + '][operator]'"
+                        :options="$optionsJson"
+                        ::value="this.getFilterValue(filter.code)?.operator"
+                        rules="required"
+                        track-by="value"
+                        label="operators"
+                    />
+    
+                    <v-error-message
+                        :name="'filters[attribute_filters][' + filter.code + '][operator]'"
+                        v-slot="{ message }"
+                    >
+                        <p
+                            class="mt-1 text-red-600 text-xs italic"
+                            v-text="message"
+                        >
+                        </p>
+                    </v-error-message>
+                </div>
+    
+                <div class="flex-1">
+                    <x-admin::form.control-group.control
+                        type="text"
+                        ::name="'filters[attribute_filters][' + filter.code + '][value]'"
+                        ::value="this.getFilterValue(filter.code)?.value"
+                        label="value"
+                        rules="required"
+                    />
+    
+                    <v-error-message
+                        :name="'filters[attribute_filters][' + filter.code + '][value]'"
+                        v-slot="{ message }"
+                    >
+                        <p
+                            class="mt-1 text-red-600 text-xs italic"
+                            v-text="message"
+                        >
+                        </p>
+                    </v-error-message>
+                </div>
 
-            <x-admin::form.control-group.control
-                type="text"
-                ::name="'filters[' + filter.code + '][value]'"
-            />
+                <span
+                    class="icon-delete text-xl cursor-pointer hover:bg-violet-50 dark:hover:bg-cherry-800 hover:rounded-md"
+                    @click="removeFilter(filter.code)"
+                >
+                </span>
+            </div>
         </div>
     </script>
 
@@ -53,12 +102,22 @@
         app.component('v-attribute-filters', {
             template: '#v-attribute-filters-template',
 
+            props: [
+                'filterValues',
+                'old'
+            ],
+
             data() {
                 return {
                     filter: '',
                     filterValue: '',
                     attributeFilters: [],
+                    attributeFilterValues: this.parseValue(this.filterValues),
+                    oldValues: this.parseValue(this.old)
                 };
+            },
+            mounted() {
+                this.initializeFilterLabels(Object.keys(this.attributeFilterValues));
             },
             watch: {
                 filter(value) {
@@ -88,10 +147,38 @@
                     try {
                         return JSON.parse(value);
                     } catch (e) {
-                        return '';
+                        return value;
                     }
+                },
+
+                getFilterValue(fieldName) {
+                    return (this.oldValues?.filters ? this.oldValues[fieldName] ?? null : null) ?? this.filterValues[fieldName];
+                },
+
+                removeFilter(filterCode) {
+                    this.attributeFilters = this.attributeFilters.filter(item => item.code !== filterCode);
+                },
+
+                initializeFilterLabels(filters) {
+                    if (filters.length < 1) {
+                        return;
+                    }
+
+                    let params = {
+                        entityName: 'attributes',
+                        page: 1,
+                        identifiers: {
+                            columnName: 'code',
+                            values: filters
+                        },
+                    };
+
+                    this.$axios.get('{{ route('admin.catalog.options.fetch-all')}}', {params: params})
+                        .then((result) => {
+                            this.attributeFilters = result.data.options;
+                        })
                 }
             }
         });
     </script>
-@endpush
+@endPushOnce
