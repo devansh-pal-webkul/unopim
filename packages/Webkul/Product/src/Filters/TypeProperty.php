@@ -14,7 +14,7 @@ class TypeProperty implements PropertyFilter
     /**
      * Apply filter on type column
      */
-    public function applyFilter(mixed $source, string $filter, string $operator, string $value)
+    public function applyFilter(mixed $source, string $filter, string $value, ?string $channel = null, ?string $locale = null)
     {
         if (empty($value)) {
             return $source;

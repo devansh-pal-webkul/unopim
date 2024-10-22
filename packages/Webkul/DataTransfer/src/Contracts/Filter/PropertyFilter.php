@@ -10,5 +10,5 @@ interface PropertyFilter
     /**
      * Applies filter on a repository
      */
-    public function applyFilter(mixed $source, string $filter, string $operator, string $value);
+    public function applyFilter(mixed $source, string $filter, string $value, ?string $channel = null, ?string $locale = null);
 }

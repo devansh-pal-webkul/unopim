@@ -28,7 +28,7 @@ class FiltersApplier
     /**
      * Apply filter on a repository according to the column values
      */
-    public function applyFilter(mixed &$source, string $filterName, mixed $value): void
+    public function applyFilter(mixed &$source, string $filterName, mixed $value, ?array $context): void
     {
         if (! $this->attributeFilters) {
             $this->setFilters();
@@ -40,18 +40,44 @@ class FiltersApplier
             return;
         }
 
-        $operator = '=';
+        if ($filter instanceof AttributeFilter) {
+            $attribute = $this->attributeService->findAttributeByCode($filterName);
 
-        $source = $filter->applyFilter($source, $filterName, $operator, $value);
+            $source = $filter->applyFilter(
+                $source,
+                $filterName,
+                $value['operator'],
+                $value['value'],
+                $attribute,
+                $context['channel'],
+                $context['locale']
+            );
+        }
+
+        if ($filter instanceof PropertyFilter) {
+            $source = $filter->applyFilter($source, $filterName, $value, $context['channel'], $context['locale']);
+        }
     }
 
     /**
      * Apply all filters on the source
      */
-    public function applyFilters(mixed &$source, array $filters): void
+    public function applyFilters(mixed &$source, array $filters, ?array $context = null): void
     {
+        $context ??= $this->getContext($filters);
+
         foreach ($filters as $filterName => $value) {
-            $this->applyFilter($source, $filterName, $value);
+            if ($filterName === 'attribute_filters') {
+                if (! is_array($value)) {
+                    continue;
+                }
+
+                $this->applyFilters($source, $value, $context);
+
+                continue;
+            }
+
+            $this->applyFilter($source, $filterName, $value, $context);
         }
     }
 
@@ -109,5 +135,32 @@ class FiltersApplier
         }
 
         return $filter;
+    }
+
+    /**
+     * Optional values for filters configuration like channel and locale
+     */
+    protected function getContext(array $filters): array
+    {
+        $context = [
+            'locale'  => $filters['locale'] ?? core()->getCurrentChannelCode(),
+            'channel' => $filters['channel'] ?? $this->getDefaultLocaleCode(),
+        ];
+
+        return $context;
+    }
+
+    /**
+     * returns current locale code of the ui if it is also in the channel otherwise channel's first locale
+     */
+    private function getDefaultLocaleCode(): string
+    {
+        $channel = core()->getCurrentChannel();
+
+        $currentLocale = core()->getCurrentLocale();
+
+        $currentLocale = $channel->locales->contains($currentLocale) ? $currentLocale : $currentChannel->locales->first();
+
+        return $currentLocale->code;
     }
 }
