@@ -72,4 +72,19 @@ return [
         'started'   => '作业执行开始',
         'completed' => '作业执行完成',
     ],
+
+    'operators' => [
+        'starts-with'      => '以开始',
+        'ends-with'        => '以结束',
+        'contains'         => '包含',
+        'does-not-contain' => '不包含',
+        'is-empty'         => '为空',
+        'is-not-empty'     => '不为空',
+        'in-list'          => '在列表中',
+        'not-in-list'      => '不在列表中',
+        'equal-to'         => '等于',
+        'not-equal-to'     => '不等于',
+        'is-true'          => '为真',
+        'is-false'         => '为假',
+    ],
 ];

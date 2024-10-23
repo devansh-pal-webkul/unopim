@@ -72,4 +72,19 @@ return [
         'started'   => 'بدأ تنفيذ المهمة',
         'completed' => 'الانتهاء من تنفيذ المهمة',
     ],
+
+    'operators' => [
+        'starts-with'      => 'يبدأ بـ',
+        'ends-with'        => 'ينتهي بـ',
+        'contains'         => 'يحتوي على',
+        'does-not-contain' => 'لا يحتوي على',
+        'is-empty'         => 'فارغ',
+        'is-not-empty'     => 'ليس فارغًا',
+        'in-list'          => 'في القائمة',
+        'not-in-list'      => 'ليس في القائمة',
+        'equal-to'         => 'يساوي',
+        'not-equal-to'     => 'لا يساوي',
+        'is-true'          => 'صحيح',
+        'is-false'         => 'خطأ',
+    ],
 ];

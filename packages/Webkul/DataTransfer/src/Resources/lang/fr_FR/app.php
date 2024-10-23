@@ -72,4 +72,19 @@ return [
         'started'   => 'L\'exécution du travail a commencé',
         'completed' => 'Exécution du travail terminée',
     ],
+
+    'operators' => [
+        'starts-with'      => 'Commence Par',
+        'ends-with'        => 'Se Termine Par',
+        'contains'         => 'Contient',
+        'does-not-contain' => 'Ne Contient Pas',
+        'is-empty'         => 'Est Vide',
+        'is-not-empty'     => 'N’est Pas Vide',
+        'in-list'          => 'Dans La Liste',
+        'not-in-list'      => 'Pas Dans La Liste',
+        'equal-to'         => 'Égal À',
+        'not-equal-to'     => 'Pas Égal À',
+        'is-true'          => 'Est Vrai',
+        'is-false'         => 'Est Faux',
+    ],
 ];

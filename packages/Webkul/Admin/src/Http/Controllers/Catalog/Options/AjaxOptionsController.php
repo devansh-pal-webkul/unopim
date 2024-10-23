@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Http\Controllers\Catalog\Options;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Attribute\Repositories\AttributeFamilyRepository;
@@ -45,13 +46,7 @@ class AjaxOptionsController extends Controller
         $formattedoptions = [];
 
         foreach ($options as $option) {
-            $translatedOptionLabel = $this->getTranslatedLabel($currentLocaleCode, $option);
-
-            $formattedoptions[] = [
-                'id'    => $option->id,
-                'code'  => $option->code,
-                'label' => ! empty($translatedOptionLabel) ? $translatedOptionLabel : "[{$option->code}]",
-            ];
+            $formattedoptions[] = $this->formatOption($option, $currentLocaleCode);
         }
 
         return new JsonResponse([
@@ -119,5 +114,20 @@ class AjaxOptionsController extends Controller
         $translation = $option->translate($currentLocaleCode);
 
         return $translation?->label ?? $translation?->name;
+    }
+
+    /**
+     * format option for select component
+     */
+    protected function formatOption(Model $option, string $currentLocaleCode)
+    {
+        $translatedOptionLabel = $this->getTranslatedLabel($currentLocaleCode, $option);
+
+        return [
+            'id'    => $option->id,
+            'code'  => $option->code,
+            'label' => ! empty($translatedOptionLabel) ? $translatedOptionLabel : "[{$option->code}]",
+            ...$option->makeHidden(['translations'])->toArray(),
+        ];
     }
 }

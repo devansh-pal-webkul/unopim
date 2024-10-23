@@ -72,4 +72,19 @@ return [
         'started'   => 'Eksekusi pekerjaan dimulai',
         'completed' => 'Eksekusi pekerjaan selesai',
     ],
+
+    'operators' => [
+        'starts-with'      => 'Dimulai Dengan',
+        'ends-with'        => 'Diakhiri Dengan',
+        'contains'         => 'Mengandung',
+        'does-not-contain' => 'Tidak Mengandung',
+        'is-empty'         => 'Kosong',
+        'is-not-empty'     => 'Tidak Kosong',
+        'in-list'          => 'Dalam Daftar',
+        'not-in-list'      => 'Tidak Dalam Daftar',
+        'equal-to'         => 'Sama Dengan',
+        'not-equal-to'     => 'Tidak Sama Dengan',
+        'is-true'          => 'Benar',
+        'is-false'         => 'Salah',
+    ],
 ];

@@ -72,4 +72,19 @@ return [
         'started'   => 'De uitvoering van de werkzaamheden is begonnen',
         'completed' => 'Uitvoering van de taak voltooid',
     ],
+
+    'operators' => [
+        'starts-with'      => 'Begint Met',
+        'ends-with'        => 'Eindigt Met',
+        'contains'         => 'Bevat',
+        'does-not-contain' => 'Bevat Niet',
+        'is-empty'         => 'Is Leeg',
+        'is-not-empty'     => 'Is Niet Leeg',
+        'in-list'          => 'In De Lijst',
+        'not-in-list'      => 'Niet In De Lijst',
+        'equal-to'         => 'Gelijk Aan',
+        'not-equal-to'     => 'Niet Gelijk Aan',
+        'is-true'          => 'Is Waar',
+        'is-false'         => 'Is Onwaar',
+    ],
 ];

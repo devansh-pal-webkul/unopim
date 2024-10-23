@@ -49,7 +49,7 @@
                     <x-admin::form.control-group.control
                         type="select"
                         ::name="'filters[attribute_filters][' + filter.code + '][operator]'"
-                        :options="$optionsJson"
+                        ::options="this.getOperatorsForType(filter.type)"
                         ::value="this.getFilterValue(filter.code)?.operator"
                         rules="required"
                         track-by="value"
@@ -113,7 +113,8 @@
                     filterValue: '',
                     attributeFilters: [],
                     attributeFilterValues: this.parseValue(this.filterValues),
-                    oldValues: this.parseValue(this.old)
+                    oldValues: this.parseValue(this.old),
+                    operators: (@json(\Webkul\DataTransfer\Enums\Operators::getOperatorsWithTypes()))
                 };
             },
             mounted() {
@@ -157,6 +158,10 @@
 
                 removeFilter(filterCode) {
                     this.attributeFilters = this.attributeFilters.filter(item => item.code !== filterCode);
+                },
+
+                getOperatorsForType(type) {
+                    return this.operators[type] ?? [];
                 },
 
                 initializeFilterLabels(filters) {
