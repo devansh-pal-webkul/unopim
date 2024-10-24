@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'कोड के साथ सुपर विशेषता: \'%s\' नहीं मिला या विशेषता परिवार से संबंधित नहीं है: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'एट्रिब्यूट परिवार',
+                'status'           => 'स्थिति',
+                'product_type'     => 'उत्पाद प्रकार',
+            ],
         ],
         'categories' => [
             'title' => 'श्रेणियाँ',

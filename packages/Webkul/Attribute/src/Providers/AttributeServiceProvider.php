@@ -12,10 +12,5 @@ class AttributeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../Database/Migrations');
-
-        $this->mergeConfigFrom(
-            dirname(__DIR__).'/Config/attribute_filters.php',
-            'attribute_filters'
-        );
     }
 }

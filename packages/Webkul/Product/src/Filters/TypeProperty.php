@@ -16,7 +16,9 @@ class TypeProperty implements PropertyFilter
      */
     public function applyFilter(mixed $source, string $filter, string $value, ?string $channel = null, ?string $locale = null)
     {
-        if (empty($value)) {
+        $types = array_keys(config('product_types'));
+
+        if (empty($value) || ! in_array($value, $types)) {
             return $source;
         }
 

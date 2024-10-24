@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'Кодтой супер атрибут: \'%s\' олдсонгүй эсвэл атрибутын бүлэгт хамаарахгүй: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'Атрибутын гэр бүл',
+                'status'           => 'Төлөв',
+                'product_type'     => 'Бүтээгдэхүүний төрөл',
+            ],
         ],
         'categories' => [
             'title' => 'Ангилал',

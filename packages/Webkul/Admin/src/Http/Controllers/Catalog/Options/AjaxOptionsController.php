@@ -73,8 +73,8 @@ class AjaxOptionsController extends Controller
         }
 
         if (! empty($query)) {
-            $repository = $repository->where(function ($queryBuilder) use ($query) {
-                $queryBuilder->whereTranslationLike('label', '%'.$query.'%')
+            $repository = $repository->where(function ($queryBuilder) use ($query, $entityName) {
+                $queryBuilder->whereTranslationLike($this->getTranslationColumnName($entityName), '%'.$query.'%')
                     ->orWhere('code', $query);
             });
         }
@@ -129,5 +129,16 @@ class AjaxOptionsController extends Controller
             'label' => ! empty($translatedOptionLabel) ? $translatedOptionLabel : "[{$option->code}]",
             ...$option->makeHidden(['translations'])->toArray(),
         ];
+    }
+
+    /**
+     * Translation for the models label to be used for search
+     */
+    protected function getTranslationColumnName(string $entityName): string
+    {
+        return match ($entityName) {
+            'family', 'attributes' => 'name',
+            default  => 'label'
+        };
     }
 }

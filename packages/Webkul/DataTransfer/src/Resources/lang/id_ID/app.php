@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'Atribut super dengan kode: \'%s\' tidak ditemukan atau tidak termasuk dalam kelompok atribut: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'Keluarga Atribut',
+                'status'           => 'Status',
+                'product_type'     => 'Tipe Produk',
+            ],
         ],
         'categories' => [
             'title' => 'Kategori',

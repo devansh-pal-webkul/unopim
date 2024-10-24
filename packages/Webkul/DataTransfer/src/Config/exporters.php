@@ -55,10 +55,10 @@ return [
                     'type'         => 'select',
                     'options'      => [
                         [
-                            'label' => 'Simple',
+                            'label' => 'product::app.type.simple',
                             'value' => 'simple',
                         ], [
-                            'label' => 'Configurable',
+                            'label' => 'product::app.type.configurable',
                             'value' => 'configurable',
                         ],
                     ],
@@ -76,11 +76,6 @@ return [
                             'value' => "'false'",
                         ],
                     ],
-                ], [
-                    'name'     => 'attribute_filters',
-                    'title'    => 'Attribute Filters',
-                    'required' => false,
-                    'type'     => 'attribute_filters',
                 ],
             ],
         ],

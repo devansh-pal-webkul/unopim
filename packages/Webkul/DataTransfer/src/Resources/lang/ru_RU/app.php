@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'Суператрибут с кодом: \'%s\' не найден или не принадлежит к семейству атрибутов: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'Семья атрибутов',
+                'status'           => 'Статус',
+                'product_type'     => 'Тип продукта',
+            ],
         ],
         'categories' => [
             'title' => 'Категории',

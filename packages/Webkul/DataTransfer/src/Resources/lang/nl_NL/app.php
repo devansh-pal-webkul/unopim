@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'Superattribuut met code: \'%s\' niet gevonden of behoort niet tot de attribuutfamilie: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'Attributfamilie',
+                'status'           => 'Status',
+                'product_type'     => 'Producttype',
+            ],
         ],
         'categories' => [
             'title' => 'Categorieën',

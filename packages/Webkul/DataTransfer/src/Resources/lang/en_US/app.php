@@ -55,7 +55,7 @@ return [
                 'sku'              => 'SKU',
                 'attribute_family' => 'Attribute Family',
                 'status'           => 'Status',
-                'type'             => 'Product Type',
+                'product_type'     => 'Product Type',
             ],
         ],
         'categories' => [

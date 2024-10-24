@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => '代码为“%s”的超级属性未找到或不属于属性系列：“%s”',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => '属性系列',
+                'status'           => '状态',
+                'product_type'     => '产品类型',
+            ],
         ],
         'categories' => [
             'title' => '类别',

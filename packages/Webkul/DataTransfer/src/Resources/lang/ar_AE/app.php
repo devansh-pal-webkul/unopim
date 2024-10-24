@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'السمة المميزة ذات الرمز: \'%s\' لم يتم العثور عليها أو لا تنتمي إلى عائلة السمات: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'رمز المنتج',
+                'attribute_family' => 'عائلة السمات',
+                'status'           => 'الحالة',
+                'product_type'     => 'نوع المنتج',
+            ],
         ],
         'categories' => [
             'title' => 'فئات',
