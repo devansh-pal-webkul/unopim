@@ -32,6 +32,55 @@ return [
                     'title'    => 'With Media',
                     'required' => false,
                     'type'     => 'boolean',
+                ], [
+                    'name'     => 'identifier',
+                    'title'    => 'data_transfer::app.exporters.products.filters.sku',
+                    'required' => false,
+                    'type'     => 'textarea',
+                ], [
+                    'name'         => 'attribute_family',
+                    'title'        => 'data_transfer::app.exporters.products.filters.attribute_family',
+                    'required'     => false,
+                    'type'         => 'multiselect',
+                    'async'        => true,
+                    'track_by'     => 'id',
+                    'label_by'     => 'label',
+                    'query_params' => [
+                        'entityName' => 'family',
+                    ],
+                ], [
+                    'name'         => 'product_type',
+                    'title'        => 'data_transfer::app.exporters.products.filters.product_type',
+                    'required'     => false,
+                    'type'         => 'select',
+                    'options'      => [
+                        [
+                            'label' => 'Simple',
+                            'value' => 'simple',
+                        ], [
+                            'label' => 'Configurable',
+                            'value' => 'configurable',
+                        ],
+                    ],
+                ], [
+                    'name'     => 'status',
+                    'title'    => 'data_transfer::app.exporters.products.filters.status',
+                    'required' => false,
+                    'type'     => 'select',
+                    'options'  => [
+                        [
+                            'label' => 'admin::app.common.enable',
+                            'value' => "'true'",
+                        ], [
+                            'label' => 'admin::app.common.disable',
+                            'value' => "'false'",
+                        ],
+                    ],
+                ], [
+                    'name'     => 'attribute_filters',
+                    'title'    => 'Attribute Filters',
+                    'required' => false,
+                    'type'     => 'attribute_filters',
                 ],
             ],
         ],

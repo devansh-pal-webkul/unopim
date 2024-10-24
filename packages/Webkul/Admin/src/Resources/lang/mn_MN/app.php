@@ -2268,6 +2268,14 @@ return [
                 'llava'                  => 'Лава',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'Шүүлтүүр нэмэх',
+                'operator' => 'оператор',
+                'value'    => 'үнэ',
+            ],
+        ],
     ],
 
     'acl' => [

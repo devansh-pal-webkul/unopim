@@ -2265,6 +2265,14 @@ return [
                 'llava'                  => 'लावा',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'फिल्टर जोड़ें',
+                'operator' => 'संचालक',
+                'value'    => 'मूल्य',
+            ],
+        ],
     ],
 
     'acl' => [

@@ -72,4 +72,19 @@ return [
         'started'   => 'Выполнение задания началось',
         'completed' => 'Выполнение задания завершено',
     ],
+
+    'operators' => [
+        'starts-with'      => 'Начинается С',
+        'ends-with'        => 'Заканчивается На',
+        'contains'         => 'Содержит',
+        'does-not-contain' => 'Не Содержит',
+        'is-empty'         => 'Пусто',
+        'is-not-empty'     => 'Не Пусто',
+        'in-list'          => 'В Списке',
+        'not-in-list'      => 'Не В Списке',
+        'equal-to'         => 'Равно',
+        'not-equal-to'     => 'Не Равно',
+        'is-true'          => 'Истинно',
+        'is-false'         => 'Ложно',
+    ],
 ];

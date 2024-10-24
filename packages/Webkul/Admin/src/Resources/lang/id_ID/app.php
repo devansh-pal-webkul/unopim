@@ -1833,6 +1833,14 @@ return [
                 'llava'                  => 'Lava',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'Tambahkan filter',
+                'operator' => 'operator',
+                'value'    => 'nilai',
+            ],
+        ],
     ],
 
     'acl' => [

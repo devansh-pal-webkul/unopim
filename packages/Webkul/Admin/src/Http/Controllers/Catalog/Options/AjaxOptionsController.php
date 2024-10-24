@@ -3,11 +3,15 @@
 namespace Webkul\Admin\Http\Controllers\Catalog\Options;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Webkul\Admin\Http\Controllers\Controller;
+use Webkul\Attribute\Repositories\AttributeFamilyRepository;
 use Webkul\Attribute\Repositories\AttributeOptionRepository;
+use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Category\Repositories\CategoryFieldOptionRepository;
 use Webkul\Core\Eloquent\Repository;
+use Webkul\Core\Eloquent\TranslatableModel;
 
 class AjaxOptionsController extends Controller
 {
@@ -18,7 +22,9 @@ class AjaxOptionsController extends Controller
      */
     public function __construct(
         protected CategoryFieldOptionRepository $categoryFieldOptionsRepository,
-        protected AttributeOptionRepository $attributeOptionsRepository
+        protected AttributeOptionRepository $attributeOptionsRepository,
+        protected AttributeFamilyRepository $attributeFamilyRepository,
+        protected AttributeRepository $attributeRepository
     ) {}
 
     /**
@@ -40,13 +46,7 @@ class AjaxOptionsController extends Controller
         $formattedoptions = [];
 
         foreach ($options as $option) {
-            $translatedOptionLabel = $option->translate($currentLocaleCode)?->label;
-
-            $formattedoptions[] = [
-                'id'    => $option->id,
-                'code'  => $option->code,
-                'label' => ! empty($translatedOptionLabel) ? $translatedOptionLabel : "[{$option->code}]",
-            ];
+            $formattedoptions[] = $this->formatOption($option, $currentLocaleCode);
         }
 
         return new JsonResponse([
@@ -88,7 +88,7 @@ class AjaxOptionsController extends Controller
             );
         }
 
-        return $repository->orderBy('id')->paginate(self::DEFAULT_PER_PAGE, ['*'], 'page', $page);
+        return $repository->orderBy('id')->paginate(self::DEFAULT_PER_PAGE, ['*'], 'paginate', $page);
     }
 
     /**
@@ -98,9 +98,36 @@ class AjaxOptionsController extends Controller
     private function getRepository(string $entityName): Repository
     {
         return match ($entityName) {
+            'attributes'     => $this->attributeRepository,
             'attribute'      => $this->attributeOptionsRepository,
             'category_field' => $this->categoryFieldOptionsRepository,
+            'family'         => $this->attributeFamilyRepository,
             default          => throw new \Exception('Not implemented for '.$entityName)
         };
+    }
+
+    /**
+     * Get translated label for the entity
+     */
+    protected function getTranslatedLabel(string $currentLocaleCode, TranslatableModel $option): string
+    {
+        $translation = $option->translate($currentLocaleCode);
+
+        return $translation?->label ?? $translation?->name;
+    }
+
+    /**
+     * format option for select component
+     */
+    protected function formatOption(Model $option, string $currentLocaleCode)
+    {
+        $translatedOptionLabel = $this->getTranslatedLabel($currentLocaleCode, $option);
+
+        return [
+            'id'    => $option->id,
+            'code'  => $option->code,
+            'label' => ! empty($translatedOptionLabel) ? $translatedOptionLabel : "[{$option->code}]",
+            ...$option->makeHidden(['translations'])->toArray(),
+        ];
     }
 }

@@ -2268,6 +2268,14 @@ return [
                 'llava'                  => 'De lava',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'Filter toevoegen',
+                'operator' => 'operator',
+                'value'    => 'waarde',
+            ],
+        ],
     ],
 
     'acl' => [

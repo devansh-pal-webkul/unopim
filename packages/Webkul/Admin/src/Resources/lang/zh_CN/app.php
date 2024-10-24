@@ -1812,6 +1812,14 @@ return [
                 'llava'                  => '熔岩',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => '添加过滤器',
+                'operator' => '操作符',
+                'value'    => '值',
+            ],
+        ],
     ],
 
     'acl' => [

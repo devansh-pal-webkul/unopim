@@ -72,4 +72,19 @@ return [
         'started'   => 'कार्य निष्पादन प्रारंभ हुआ',
         'completed' => 'कार्य निष्पादन पूरा हुआ',
     ],
+
+    'operators' => [
+        'starts-with'      => 'से शुरू होता है',
+        'ends-with'        => 'से समाप्त होता है',
+        'contains'         => 'शामिल है',
+        'does-not-contain' => 'शामिल नहीं है',
+        'is-empty'         => 'खाली है',
+        'is-not-empty'     => 'खाली नहीं है',
+        'in-list'          => 'सूची में',
+        'not-in-list'      => 'सूची में नहीं',
+        'equal-to'         => 'के बराबर',
+        'not-equal-to'     => 'के बराबर नहीं',
+        'is-true'          => 'सत्य है',
+        'is-false'         => 'झूठ है',
+    ],
 ];

@@ -72,4 +72,19 @@ return [
         'started'   => 'Ажлын гүйцэтгэл эхэлсэн',
         'completed' => 'Ажлын гүйцэтгэл дууссан',
     ],
+
+    'operators' => [
+        'starts-with'      => 'Эхэлдэг',
+        'ends-with'        => 'Дуусдаг',
+        'contains'         => 'Агуулсан',
+        'does-not-contain' => 'Агуулдаггүй',
+        'is-empty'         => 'Хоосон',
+        'is-not-empty'     => 'Хоосон биш',
+        'in-list'          => 'Жагсаалтад',
+        'not-in-list'      => 'Жагсаалтад биш',
+        'equal-to'         => 'Тэнцүү',
+        'not-equal-to'     => 'Тэнцүү биш',
+        'is-true'          => 'Үнэн',
+        'is-false'         => 'Тийм биш',
+    ],
 ];

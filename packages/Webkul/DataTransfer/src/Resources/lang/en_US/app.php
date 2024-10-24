@@ -50,6 +50,13 @@ return [
                     'super-attribute-not-found' => 'Super attribute with code: \'%s\' not found or does not belong to the attribute family: \'%s\'',
                 ],
             ],
+
+            'filters' => [
+                'sku'              => 'SKU',
+                'attribute_family' => 'Attribute Family',
+                'status'           => 'Status',
+                'type'             => 'Product Type',
+            ],
         ],
         'categories' => [
             'title' => 'Categories',
@@ -71,5 +78,20 @@ return [
     'job' => [
         'started'   => 'Job execution started',
         'completed' => 'Job execution completed',
+    ],
+
+    'operators' => [
+        'starts-with'      => 'Starts With',
+        'ends-with'        => 'Ends With',
+        'contains'         => 'Contains',
+        'does-not-contain' => 'Does Not Contain',
+        'is-empty'         => 'Is Empty',
+        'is-not-empty'     => 'Is Not Empty',
+        'in-list'          => 'In List',
+        'not-in-list'      => 'Not In List',
+        'equal-to'         => 'Equal To',
+        'not-equal-to'     => 'Not Equal To',
+        'is-true'          => 'Is True',
+        'is-false'         => 'Is False',
     ],
 ];
