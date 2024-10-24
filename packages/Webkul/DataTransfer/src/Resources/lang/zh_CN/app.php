@@ -60,6 +60,10 @@ return [
         ],
         'categories' => [
             'title' => '类别',
+            
+            'filters' => [
+                'code' => '代码',
+            ],
         ],
     ],
 

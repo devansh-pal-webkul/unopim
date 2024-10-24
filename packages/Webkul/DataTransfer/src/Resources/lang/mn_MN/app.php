@@ -60,6 +60,10 @@ return [
         ],
         'categories' => [
             'title' => 'Ангилал',
+
+            'filters' => [
+                'code' => 'Код',
+            ],
         ],
     ],
 

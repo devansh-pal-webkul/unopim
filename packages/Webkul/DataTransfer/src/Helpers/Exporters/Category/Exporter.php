@@ -8,6 +8,7 @@ use Webkul\Category\Validator\FieldValidator;
 use Webkul\DataTransfer\Contracts\JobTrackBatch as JobTrackBatchContract;
 use Webkul\DataTransfer\Helpers\Export;
 use Webkul\DataTransfer\Helpers\Exporters\AbstractExporter;
+use Webkul\DataTransfer\Helpers\Filters\FiltersApplier;
 use Webkul\DataTransfer\Jobs\Export\File\FlatItemBuffer as FileExportFileBuffer;
 use Webkul\DataTransfer\Repositories\JobTrackBatchRepository;
 
@@ -27,6 +28,7 @@ class Exporter extends AbstractExporter
         protected JobTrackBatchRepository $exportBatchRepository,
         protected FileExportFileBuffer $exportFileBuffer,
         protected CategoryFieldRepository $categoryFieldRepository,
+        protected FiltersApplier $filtersApplier
     ) {
         parent::__construct($exportBatchRepository, $exportFileBuffer);
     }
@@ -68,7 +70,11 @@ class Exporter extends AbstractExporter
      */
     protected function getResults()
     {
-        return $this->source->with('parent_category')->all()?->getIterator();
+        $source = $this->source->with('parent_category');
+
+        $this->filtersApplier->applyFilters($source, $this->getFilters());
+
+        return $source->get()?->getIterator();
     }
 
     /**

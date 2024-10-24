@@ -112,7 +112,13 @@ return [
                     'title'    => 'With Media',
                     'required' => false,
                     'type'     => 'boolean',
+                ], [
+                    'name'     => 'category_identifier',
+                    'title'    => 'data_transfer::app.exporters.categories.filters.code',
+                    'required' => false,
+                    'type'     => 'textarea',
                 ],
+                
             ],
         ],
     ],

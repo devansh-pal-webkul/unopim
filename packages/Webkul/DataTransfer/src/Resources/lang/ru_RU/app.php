@@ -60,6 +60,10 @@ return [
         ],
         'categories' => [
             'title' => 'Категории',
+
+            'filters' => [
+                'code' => 'Код',
+            ],
         ],
     ],
 
