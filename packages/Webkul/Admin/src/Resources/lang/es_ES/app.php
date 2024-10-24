@@ -1817,6 +1817,14 @@ return [
                 'llava'                  => 'La lava',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'Agregar filtro',
+                'operator' => 'operador',
+                'value'    => 'valor',
+            ],
+        ],
     ],
 
     'acl' => [

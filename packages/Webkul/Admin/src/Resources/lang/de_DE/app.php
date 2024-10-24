@@ -1815,6 +1815,14 @@ return [
                 'llava'                  => 'LLaVA',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'Filter hinzufügen',
+                'operator' => 'Operator',
+                'value'    => 'Wert',
+            ],
+        ],
     ],
 
     'acl' => [

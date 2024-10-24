@@ -27,19 +27,9 @@
                 :class="{ 'cursor-not-allowed': !filterValue }"
                 @click="addFilter"
             >
-                Add filter
+                @lang('admin::app.components.filters.attribute-filters.title')
             </span>
         </div>
-
-        @php
-            $optionsJson = [
-                ['label' => 'Equal to', 'value' => '='],
-                ['label' => 'Not equal to', 'value' => '!='],
-                ['label' => 'Contains', 'value' => 'like'],
-            ];
-
-            $optionsJson = json_encode($optionsJson);
-        @endphp
 
         <div v-for="filter in attributeFilters" class="grid gap-1">
             <x-admin::form.control-group.label class="mt-3" v-text="filter.label" />
@@ -53,7 +43,10 @@
                         ::value="this.getFilterValue(filter.code)?.operator"
                         rules="required"
                         track-by="value"
-                        label="operators"
+                        :label="trans('admin::app.components.filters.attribute-filters.operator')"
+                        ::ref="filter.code + '_operator'"
+                        v-model="selectedOperator"
+                        @change="this.displayValueField(filter.code)"
                     />
     
                     <v-error-message
@@ -67,13 +60,13 @@
                         </p>
                     </v-error-message>
                 </div>
-    
-                <div class="flex-1">
+
+                <div class="flex-1" v-if="this.displayValueField(filter.code)" ::data-attr="this.displayValueField(filter.code)">
                     <x-admin::form.control-group.control
                         type="text"
                         ::name="'filters[attribute_filters][' + filter.code + '][value]'"
                         ::value="this.getFilterValue(filter.code)?.value"
-                        label="value"
+                        :label="trans('admin::app.components.filters.attribute-filters.value')"
                         rules="required"
                     />
     
@@ -114,7 +107,8 @@
                     attributeFilters: [],
                     attributeFilterValues: this.parseValue(this.filterValues),
                     oldValues: this.parseValue(this.old),
-                    operators: (@json(\Webkul\DataTransfer\Enums\Operators::getOperatorsWithTypes()))
+                    operators: (@json(\Webkul\DataTransfer\Enums\Operators::getOperatorsWithTypes())),
+                    selectedOperator: '',
                 };
             },
             mounted() {
@@ -123,7 +117,7 @@
             watch: {
                 filter(value) {
                     this.filterValue = this.parseValue(value);
-                }
+                },
             },
             methods: {
                 addFilter() {
@@ -182,6 +176,14 @@
                         .then((result) => {
                             this.attributeFilters = result.data.options;
                         })
+                },
+
+                displayValueField(filterName) {
+                    const selectedOperator = this.$refs[filterName + '_operator'] ? this.$refs[filterName + '_operator'][0]?.selectedOption : '';
+
+                    let shouldNotDisplayField = ['EMPTY', 'NOT_EMPTY', 'IS_TRUE', 'IS_FALSE'].includes(selectedOperator);
+
+                    return ! shouldNotDisplayField;
                 }
             }
         });

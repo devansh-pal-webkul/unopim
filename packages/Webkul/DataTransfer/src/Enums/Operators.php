@@ -4,29 +4,29 @@ namespace Webkul\DataTransfer\Enums;
 
 enum Operators: string
 {
-    case STARTS_WITH = 'STARTS WITH';
+    case STARTS_WITH = 'STARTS_WITH';
 
-    case ENDS_WITH = 'ENDS WITH';
+    case ENDS_WITH = 'ENDS_WITH';
 
     case CONTAINS = 'CONTAINS';
 
-    case DOES_NOT_CONTAIN = 'DOES NOT CONTAIN';
+    case DOES_NOT_CONTAIN = 'DOES_NOT_CONTAIN';
 
     case IS_EMPTY = 'EMPTY';
 
-    case IS_NOT_EMPTY = 'NOT EMPTY';
+    case IS_NOT_EMPTY = 'NOT_EMPTY';
 
     case IN_LIST = 'IN';
 
-    case NOT_IN_LIST = 'NOT IN';
+    case NOT_IN_LIST = 'NOT_IN';
 
-    case EQUAL_TO = 'EQUAL TO';
+    case EQUAL_TO = 'EQUAL_TO';
 
-    case NOT_EQUAL_TO = 'NOT EQUAL TO';
+    case NOT_EQUAL_TO = 'NOT_EQUAL_TO';
 
-    case IS_TRUE = 'IS TRUE';
+    case IS_TRUE = 'IS_TRUE';
 
-    case IS_FALSE = 'IS FALSE';
+    case IS_FALSE = 'IS_FALSE';
 
     /**
      * Get the label for the operator.
@@ -114,8 +114,8 @@ enum Operators: string
         return [
             self::IN_LIST,
             self::NOT_IN_LIST,
-            self::EQUAL_TO,
-            self::NOT_EQUAL_TO,
+            self::IS_EMPTY,
+            self::IS_NOT_EMPTY,
         ];
     }
 
@@ -177,6 +177,7 @@ enum Operators: string
     {
         $types = [
             'text'        => self::getTextOperators(),
+            'textarea'    => self::getTextOperators(),
             'price'       => self::getPriceOperators(),
             'boolean'     => self::getBooleanOperators(),
             'select'      => self::getSelectOperators(),

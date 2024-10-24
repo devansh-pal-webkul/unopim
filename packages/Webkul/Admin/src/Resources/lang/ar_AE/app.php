@@ -2268,6 +2268,14 @@ return [
                 'llava'                  => 'لافا',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'إضافة فلتر',
+                'operator' => 'عامل',
+                'value'    => 'القيمة',
+            ],
+        ],
     ],
 
     'acl' => [

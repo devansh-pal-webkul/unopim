@@ -1816,6 +1816,14 @@ return [
                 'llava'                  => 'La lave',
             ],
         ],
+
+        'filters' => [
+            'attribute-filters' => [
+                'title'    => 'Ajouter un filtre',
+                'operator' => 'opérateur',
+                'value'    => 'valeur',
+            ],
+        ],
     ],
 
     'acl' => [
