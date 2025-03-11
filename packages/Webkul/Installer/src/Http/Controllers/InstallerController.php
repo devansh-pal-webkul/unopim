@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
+use Webkul\Core\ElasticSearch;
 use Webkul\Installer\Helpers\DatabaseManager;
 use Webkul\Installer\Helpers\EnvironmentManager;
 use Webkul\Installer\Helpers\ServerRequirements;
+use Webkul\Installer\Http\Requests\ElasticConfigurationForm;
 
 class InstallerController extends Controller
 {
@@ -183,5 +185,27 @@ class InstallerController extends Controller
         Event::dispatch('unopim.installed');
 
         return $filePath;
+    }
+
+    /**
+     * Run Migration
+     */
+    public function runElasticIndexers(ElasticConfigurationForm $request)
+    {
+        $response = $this->environmentManager->setEnvConfiguration($request->all());
+
+        if (! $response) {
+            return response()->json(['success' => false, 'error' => 'Unable to set env configuration for elasticsearch configuration'], 500);
+        }
+
+        if (empty($request['elasticsearch_enabled'])) {
+            return response()->json(['success' => true], 200);
+        }
+
+        if (! ElasticSearch::testConnection()) {
+            return response()->json(['success' => false, 'errors' => ['elasticsearch_host' => 'Incorrect elasticsearch details.Please check all the added details']], 500);
+        }
+
+        return response()->json(['success' => true]);
     }
 }

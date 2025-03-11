@@ -208,6 +208,27 @@
                                     <p>@lang('installer::app.installer.index.ready-for-installation.title')</p>
                                 </div>
 
+
+                                <!-- Elasticsearch Configuration -->
+                                <div
+                                    class="flex gap-1 text-[14px] text-gray-600"
+                                    :class="[stepStates.elasticSearchConfig == 'active' ? 'font-bold' : '', 'text-gray-600']"
+                                >
+                                    <span v-if="stepStates.elasticSearchConfig !== 'complete'">
+                                        <span
+                                            class="text-[20px]"
+                                            :class="stepStates.elasticSearchConfig === 'pending' ? 'icon-checkbox-normal' : 'icon-right'"
+                                        >
+                                        </span>
+                                    </span>
+
+                                    <span v-else>
+                                        <span class="icon-tick text-green-500"></span>
+                                    </span>
+
+                                    <p>@lang('installer::app.installer.index.elasticsearch-config.title')</p>
+                                </div>
+
                                 <!-- Create Admin Configuration -->
                                 <div
                                     class="flex gap-1 text-[14px] text-gray-600"
@@ -865,7 +886,7 @@
                                         </x-installer::form.control-group.label>
 
                                         <!-- Allowed Locales -->
-                                        @foreach ($locales as $key => $locale)
+                                        @foreach ($locales as $key)
                                             <x-installer::form.control-group class="flex gap-2.5 w-max !mb-0 p-1.5 cursor-pointer select-none">
                                                 @php
                                                     $selectedOption = ($key == config('app.locale'));
@@ -937,6 +958,176 @@
                                         @endforeach
                                     </x-installer::form.control-group>
                                 </div>
+                            </div>
+
+                            <div class="flex px-4 py-2.5 justify-end items-center">
+                                <button
+                                    type="submit"
+                                    class="px-3 py-1.5 bg-violet-700 border border-violet-700 rounded-md text-gray-50 font-semibold cursor-pointer hover:opacity-90"
+                                    tabindex="0"
+                                >
+                                    @lang('installer::app.installer.index.continue')
+                                </button>
+                            </div>
+
+                        </form>
+                    </x-installer::form>
+                </div>
+
+                <!-- Elastic Search Configuration -->
+                <div
+                    class="w-full max-w-[568px] bg-white rounded-lg shadow-[0px_8px_10px_0px_rgba(0,0,0,0.05)] border-[1px] border-gray-300"
+                    v-if="currentStep == 'elasticSearchConfig'"
+                >
+                    <x-installer::form
+                        v-slot="{ meta, errors, handleSubmit }"
+                        as="div"
+                    >
+                        <form
+                            @submit.prevent="handleSubmit($event, FormSubmit)"
+                            ref="elasticSearchConfigForm"
+                        >
+                            <div class="flex justify-between items-center gap-2.5 px-4 py-[11px] border-b-[1px] border-gray-300">
+                                <p class="text-[20px] text-gray-800 font-bold">
+                                    @lang('installer::app.installer.index.elasticsearch-config.title')
+                                </p>
+                            </div>
+
+                            <div class="flex flex-col gap-3 px-[30px] py-4 border-b-[1px] border-gray-300 h-[484px] overflow-y-auto">
+                                <!-- Enabled -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.enabled')
+                                    </x-installer::form.control-group.label>
+
+                                    <input type="hidden" name="elasticsearch_enabled" value="0">
+
+                                    <x-installer::form.control-group.control
+                                        type="switch"
+                                        name="elasticsearch_enabled"
+                                        value="1"
+                                        :checked="true"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.enabled')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_enabled" />
+                                </x-installer::form.control-group>
+
+                                <!-- Connection -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.connection')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="select"
+                                        name="elasticsearch_connection"
+                                        ::value="envData?.elasticsearch_connection ?? 'default'"
+                                        :aria-label="trans('installer::app.installer.index.elasticsearch-config.connection')"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.connection')"
+                                    >
+                                        @foreach(['default', 'api', 'cloud'] as $value)
+                                            <option
+                                                value="{{ $value }}"
+                                                {{ $value === 'default' ? 'selected' : '' }}
+                                            >
+                                                {{ $value }}
+                                            </option>
+                                        @endforeach
+                                    </x-installer::form.control-group.control>
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_connection" />
+                                </x-installer::form.control-group>
+
+                                <!-- Host -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.host')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="text"
+                                        name="elasticsearch_host"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.host')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_host" />
+                                </x-installer::form.control-group>
+
+                                <!-- Host -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.index-prefix')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="text"
+                                        name="elasticsearch_index_prefix"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.index-prefix')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_index_prefix" />
+                                </x-installer::form.control-group>
+
+                                <!-- User -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.user')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="text"
+                                        name="elasticsearch_user"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.user')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_user" />
+                                </x-installer::form.control-group>
+
+                                <!-- Password -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.password')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="password"
+                                        name="elasticsearch_password"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.password')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_password" />
+                                </x-installer::form.control-group>
+
+                                <!-- Api Key -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.api-key')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="text"
+                                        name="elasticsearch_api_key"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.api-key')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_api_key" />
+                                </x-installer::form.control-group>
+
+                                <!-- Api Key -->
+                                <x-installer::form.control-group class="mb-2.5">
+                                    <x-installer::form.control-group.label>
+                                        @lang('installer::app.installer.index.elasticsearch-config.cloud-id')
+                                    </x-installer::form.control-group.label>
+
+                                    <x-installer::form.control-group.control
+                                        type="text"
+                                        name="elasticsearch_cloud_id"
+                                        :label="trans('installer::app.installer.index.elasticsearch-config.cloud-id')"
+                                    />
+
+                                    <x-installer::form.control-group.error control-name="elasticsearch_cloud_id" />
+                                </x-installer::form.control-group>
                             </div>
 
                             <div class="flex px-4 py-2.5 justify-end items-center">
@@ -1100,7 +1291,7 @@
                                             :aria-label="trans('installer::app.installer.index.environment-configuration.default-locale')"
                                             :label="trans('installer::app.installer.index.environment-configuration.default-locale')"
                                         >
-                                            @foreach ($locales as $value => $label)
+                                            @foreach ($locales as $value)
                                                 <option value="{{ $value }}">
                                                     @lang("installer::app.installer.index.$label")
                                                 </option>
@@ -1201,6 +1392,7 @@
                                 envDatabase: 'pending',
                                 readyForInstallation: 'pending',
                                 envConfiguration: 'pending',
+                                elasticSearchConfig: 'pending',
                                 createAdmin: 'pending',
                                 installationCompleted: 'pending',
                             },
@@ -1212,6 +1404,7 @@
                                 'readyForInstallation',
                                 'installProgress',
                                 'envConfiguration',
+                                'elasticSearchConfig',
                                 'createAdmin',
                                 'installationCompleted',
                             ],
@@ -1245,6 +1438,16 @@
                                     }
                                 },
 
+                                elasticSearchConfig: (setErrors) => {
+                                    let formData = new FormData(this.$refs.elasticSearchConfigForm);
+
+                                    for (let [key, value] of formData.entries()) {
+                                        params[key] = value;
+                                    }
+
+                                    this.runElasticIndexers(params, setErrors);
+                                },
+
                                 readyForInstallation: (setErrors) => {
                                     this.currentStep = 'installProgress';
 
@@ -1268,7 +1471,7 @@
                         nextForm(params) {
                             const stepActions = {
                                 start: () => {
-                                    this.completeStep('start', 'systemRequirements', 'active', 'complete');
+                                    this.completeStep('start', 'elasticSearchConfig', 'active', 'complete');
                                 },
 
                                 systemRequirements: () => {
@@ -1367,15 +1570,33 @@
                                 });
                         },
 
+                        runElasticIndexers(params, setErrors) {
+                            this.$axios.post("{{ route('installer.run_elastic_indexers') }}", params)
+                                .then((response) => {
+                                    this.completeStep('elasticSearchConfig', 'createAdmin', 'active', 'complete');
+
+                                    this.currentStep = 'createAdmin';
+                                })
+                                .catch(error => {
+                                    if (error.response?.data?.errors) {
+                                        setErrors(error.response.data.errors);
+                                    }
+
+                                    if (error.response?.data?.error) {
+                                        alert(error.response.data.error || error.response.data.message);
+                                    }
+                                });
+                        },
+
                         startSeeding(selectedParams, allParameters) {
                             this.$axios.post("{{ route('installer.run_seeder') }}", {
                                 'allParameters': allParameters,
                                 'selectedParameters': selectedParams
                             })
                                 .then((response) => {
-                                    this.completeStep('envConfiguration', 'createAdmin', 'active', 'complete');
+                                    this.completeStep('envConfiguration', 'elasticSearchConfig', 'active', 'complete');
 
-                                    this.currentStep = 'createAdmin';
+                                    this.currentStep = 'elasticSearchConfig';
                             })
                                 .catch(error => {
                                     setErrors(error.response.data.errors);

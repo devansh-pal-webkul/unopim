@@ -73,6 +73,17 @@ class EnvironmentManager
             $envDBParams['APP_TIMEZONE'] = $request['app_timezone'];
         }
 
+        if (isset($request['elasticsearch_enabled'])) {
+            $envDBParams['ELASTICSEARCH_ENABLED'] = (bool) $request['elasticsearch_enabled'] == 'true' ? 'true' : 'false';
+            $envDBParams['ELASTICSEARCH_CONNECTION'] = $request['elasticsearch_connection'] ?? 'default';
+            $envDBParams['ELASTICSEARCH_HOST'] = $request['elasticsearch_host'] ?? '';
+            $envDBParams['ELASTICSEARCH_USER'] = $request['elasticsearch_user'] ?? '';
+            $envDBParams['ELASTICSEARCH_PASS'] = $request['elasticsearch_pass'] ?? '';
+            $envDBParams['ELASTICSEARCH_API_KEY'] = $request['elasticsearch_api_key'] ?? '';
+            $envDBParams['ELASTICSEARCH_CLOUD_ID'] = $request['elasticsearch_cloud_id'] ?? '';
+            $envDBParams['ELASTICSEARCH_INDEX_PREFIX'] = $request['elasticsearch_index_prefix'] ?? '';
+        }
+
         $data = file_get_contents(base_path('.env'));
 
         foreach ($envDBParams as $key => $value) {
@@ -86,6 +97,8 @@ class EnvironmentManager
         try {
             file_put_contents(base_path('.env'), $data);
         } catch (Exception $e) {
+            report($e);
+
             return false;
         }
 

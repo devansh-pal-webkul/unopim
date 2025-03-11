@@ -73,4 +73,39 @@
         </label>
 
         @break
+
+    @case('switch')
+        <label class="relative inline-flex items-center cursor-pointer">
+            <v-field
+                type="checkbox"
+                class="hidden"
+                v-slot="{ field }"
+                {{ $attributes->only(['name', ':name', 'value', ':value', 'v-model', 'rules', ':rules', 'label', ':label']) }}
+                name="{{ $name }}"
+            >
+                <input
+                    type="checkbox"
+                    name="{{ $name }}"
+                    id="{{ $name }}"
+                    class="sr-only peer"
+                    v-bind="field"
+                    {{ $attributes->except(['v-model', 'rules', ':rules', 'label', ':label']) }}
+                />
+                
+                <v-checkbox-handler
+                    class="hidden"
+                    :field="field"
+                    checked="{{ $attributes->get('checked') }}"
+                >
+                </v-checkbox-handler>
+            </v-field>
+
+            <label
+                class="rounded-full w-9 h-5 bg-gray-200 cursor-pointer peer-focus:ring-violet-300 after:bg-white dark:after:bg-white after:border-gray-300 dark:after:border-white peer-checked:bg-violet-700 dark:peer-checked:bg-violet-700 peer peer-checked:after:border-white peer-checked:after:ltr:translate-x-full peer-checked:after:rtl:-translate-x-full after:content-[''] after:absolute after:top-0.5 after:ltr:left-0.5 after:rtl:right-0.5 peer-focus:outline-none after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:bg-cherry-800"
+                for="{{ $name }}"
+            ></label>
+        </label>
+
+        @break
+
 @endswitch

@@ -351,10 +351,14 @@ return [
                 'warning-message'     => 'Beware! The settings for your default system languages as well as the default currency are permanent and cannot be changed ever again.',
             ],
 
-            'installation-processing'   => [
-                'unopim'            => 'Installation UnoPim',
-                'unopim-info'       => 'Creating the database tables, this can take a few moments',
-                'title'             => 'Installation',
+            'elasticsearch-config' => [
+                'title' => 'ElasticSearch Configuration',
+            ],
+
+            'installation-processing' => [
+                'unopim'      => 'Installation UnoPim',
+                'unopim-info' => 'Creating the database tables, this can take a few moments',
+                'title'       => 'Installation',
             ],
 
             'installation-completed'    => [

@@ -16,6 +16,8 @@ Route::middleware(['web', 'installer_locale'])->group(function () {
             Route::post('run-seeder', 'runSeeder')->name('installer.run_seeder')->withoutMiddleware('web');
 
             Route::post('admin-config-setup', 'adminConfigSetup')->name('installer.admin_config_setup')->withoutMiddleware('web');
+
+            Route::post('run-elastic-indexers', 'runElasticIndexers')->name('installer.run_elastic_indexers')->withoutMiddleware('web');
         });
     });
 });
