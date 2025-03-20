@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Webkul\Admin\DataGrids\Catalog\AttributeDataGrid;
+use Webkul\Admin\DataGrids\Catalog\AttributeOptionDataGrid;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\MassDestroyRequest;
 use Webkul\Attribute\Repositories\AttributeRepository;
@@ -97,9 +98,7 @@ class AttributeController extends Controller
      */
     public function getAttributeOptions(int $id)
     {
-        $attribute = $this->attributeRepository->findOrFail($id);
-
-        return $attribute->options()->orderBy('sort_order')->get();
+        return app(AttributeOptionDataGrid::class)->toJson();
     }
 
     /**

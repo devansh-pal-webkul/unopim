@@ -227,151 +227,44 @@
                                   
                                 </div>
 
-                                <template v-if="optionsData?.length">
-                                    @if (
-                                        $attribute->type == 'select'
-                                        || $attribute->type == 'multiselect'
-                                        || $attribute->type == 'checkbox'
-                                    )
-                                        <!-- Table Information -->
-                                        <x-admin::table>
-                                            <x-admin::table.thead class="text-sm font-medium dark:bg-gray-800">
-                                                <x-admin::table.thead.tr>
-                                                    <x-admin::table.th class="!p-0"></x-admin::table.th>
-    
-                                                    <!-- Swatch Select -->
-                                                    <x-admin::table.th v-if="showSwatch && (selectedSwatchType == 'color' || selectedSwatchType == 'image')">
-                                                        @lang('admin::app.catalog.attributes.edit.swatch')
-                                                    </x-admin::table.th>
-    
-                                                    <!-- Admin tables heading -->
-                                                    <x-admin::table.th>
-                                                        @lang('admin::app.catalog.attributes.edit.code')
-                                                    </x-admin::table.th>
-    
-                                                    <!-- Loacles tables heading -->
-                                                    @foreach ($locales as $locale)
-                                                        <x-admin::table.th>
-                                                            {{ $locale->name }}
-                                                        </x-admin::table.th>
-                                                    @endforeach
-    
-                                                    <!-- Action tables heading -->
-                                                    <x-admin::table.th></x-admin::table.th>
-                                                </x-admin::table.thead.tr>
-                                            </x-admin::table.thead>
-    
-                                            <!-- Draggable Component -->
-                                            <draggable
-                                                tag="tbody"
-                                                ghost-class="draggable-ghost"
-                                                handle=".icon-drag"
-                                                v-bind="{animation: 200}"
-                                                :list="optionsData"
-                                                item-key="id"
+                                <x-admin::datagrid
+                                    :src="route('admin.catalog.attributes.options', $attribute->id)"
+                                    
+                                >
+                                    <template #body="{ columns, records, performAction, applied, actions, isLoading }">
+                                        <template v-if="! isLoading">
+                                            <div
+                                                v-for="record in records"
+                                                class="row grid gap-2.5 items-center px-4 py-4 border-b dark:border-cherry-800 text-gray-600 dark:text-gray-300 transition-all hover:bg-violet-50 hover:bg-opacity-30 dark:hover:bg-cherry-800"
+                                                :style="'grid-template-columns: 1fr repeat(' + (actions.length ? columns.length : (columns.length -1 )) + ', 1fr)'"
                                             >
-                                                <template #item="{ element, index }">
-                                                    <x-admin::table.thead.tr
-                                                        class="hover:bg-violet-50 hover:bg-opacity-50 dark:hover:bg-cherry-800"
-                                                        v-show="! element.isDelete"
+
+                                                <p v-text="record.code" class="text-nowrap overflow-hidden text-ellipsis hover:text-wrap"></p>
+
+                                                <p v-for="locale in locales" v-text="record['name_' + locale.code]" class="text-nowrap overflow-hidden text-ellipsis hover:text-wrap"></p>
+
+
+                                                <!-- Actions -->
+                                                <div class="flex justify-end">
+                                                    <span
+                                                        class="cursor-pointer rounded-md p-1.5 text-2xl transition-all hover:bg-violet-100 dark:hover:bg-gray-800 max-sm:place-self-center"
+                                                        :class="action.icon"
+                                                        v-text="!action.icon ? action.title : ''"
+                                                        v-for="action in record.actions"
+                                                        :title="action.title ?? ''"
+                                                        @click="checkAndPerformAction(record.id, action, performAction)"
                                                     >
-                                                        <input
-                                                            type="hidden"
-                                                            :name="'options[' + element.id + '][isNew]'"
-                                                            :value="element.isNew"
-                                                        >
-    
-                                                        <input
-                                                            type="hidden"
-                                                            :name="'options[' + element.id + '][isDelete]'"
-                                                            :value="element.isDelete"
-                                                        >
-    
-                                                        <!-- Draggable Icon -->
-                                                        <x-admin::table.td class="!px-0 text-center">
-                                                            <i class="icon-drag text-2xl transition-all group-hover:text-gray-700 cursor-grab"></i>
-    
-                                                            <input
-                                                                type="hidden"
-                                                                :name="'options[' + element.id + '][sort_order]'"
-                                                                :value="index"
-                                                            />
-                                                        </x-admin::table.td>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </template>
 
-                                                        <!-- Admin-->
-                                                        <x-admin::table.td>
-                                                            <p
-                                                                class="dark:text-white"
-                                                                v-text="element.code"
-                                                                :data-attr="JSON.stringify(locales)"
-                                                            >
-                                                            </p>
-    
-                                                            <input
-                                                                type="hidden"
-                                                                :name="'options[' + element.id + '][code]'"
-                                                                v-model="element.code"
-                                                            />
-                                                        </x-admin::table.td>
-    
-                                                        <!-- Loacles -->
-                                                        <x-admin::table.td v-for="locale in locales">
-                                                            <p
-                                                                class="dark:text-white"
-                                                                v-text="element['locales'][locale.code]"
-                                                            >
-                                                            </p>
-    
-                                                            <input
-                                                                type="hidden"
-                                                                :name="'options[' + element.id + '][' + locale.code + '][label]'"
-                                                                v-model="element['locales'][locale.code]"
-                                                            />
-                                                        </x-admin::table.td>
-    
-                                                        <!-- Actions Button -->
-                                                        <x-admin::table.td class="!px-0">
-                                                            <span
-                                                                class="icon-edit p-1.5 rounded-md text-2xl cursor-pointer transition-all hover:bg-violet-100 dark:hover:bg-gray-800 max-sm:place-self-center"
-                                                                @click="editOptions(element)"
-                                                            >
-                                                            </span>
-    
-                                                            <span
-                                                                class="icon-delete p-1.5 rounded-md text-2xl cursor-pointer transition-all hover:bg-violet-50 dark:hover:bg-gray-800  max-sm:place-self-center"
-                                                                @click="removeOption(element.id)"
-                                                            >
-                                                            </span>
-                                                        </x-admin::table.td>
-                                                    </x-admin::table.thead.tr>
-                                                </template>
-                                            </draggable>
-                                        </x-admin::table>
-                                    @endif
-                                </template>
-
-                                <!-- For Empty Attribute Options -->
-                                <template v-else>
-                                    <div class="grid gap-3.5 justify-items-center py-10 px-2.5">
-                                        <!-- Attribute Option Image -->
-                                        <img
-                                            class="w-[120px] h-[120px] dark:invert dark:mix-blend-exclusion"
-                                            src="{{ unopim_asset('images/icon-add-product.svg') }}"
-                                            alt="{{ trans('admin::app.catalog.attributes.edit.add-attribute-options') }}"
-                                        >
-
-                                        <!-- Add Attribute Options Information -->
-                                        <div class="flex flex-col gap-1.5 items-center">
-                                            <p class="text-base text-gray-400 font-semibold">
-                                                @lang('admin::app.catalog.attributes.edit.add-attribute-options')
-                                            </p>
-
-                                            <p class="text-gray-400">
-                                                @lang('admin::app.catalog.attributes.edit.add-options-info')
-                                            </p>
-                                        </div>
-                                    </div>
-                                </template>
+                                        <!-- Datagrid Shimmer for body when loading data  -->
+                                        <template v-else>
+                                            <x-admin::shimmer.datagrid.table.body :isMultiRow="true" />
+                                        </template>
+                                    </template>
+                                </x-admin::datagrid>
                             </div>
                         </div>
                     </div>
@@ -725,10 +618,6 @@
                     }
                 },
 
-                created: function () {
-                    this.getAttributesOption();
-                },
-
                 watch: {
                     validationType(value) {
                         this.selectedValidationType = this.parseValue(value)?.id;
@@ -775,6 +664,14 @@
                         }
 
                         resetForm();
+                    },
+
+                    checkAndPerformAction(id, action, performAction) {
+                        if (action.title === 'Delete') {
+                            performAction(action);
+                        }
+                        
+                        // TODO: open edit modal and save edited value
                     },
 
                     editOptions(value) {
