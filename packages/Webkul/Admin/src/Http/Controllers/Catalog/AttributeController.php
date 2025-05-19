@@ -74,7 +74,7 @@ class AttributeController extends Controller
 
         session()->flash('success', trans('admin::app.catalog.attributes.create-success'));
 
-        return redirect()->route('admin.catalog.attributes.index');
+        return redirect()->route('admin.catalog.attributes.edit', $attribute->id);
     }
 
     /**

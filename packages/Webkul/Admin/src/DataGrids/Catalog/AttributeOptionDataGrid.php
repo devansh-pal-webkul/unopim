@@ -7,6 +7,31 @@ use Webkul\DataGrid\DataGrid;
 
 class AttributeOptionDataGrid extends DataGrid
 {
+    protected ?int $attributeId;
+
+    /**
+     * Get the attribute ID.
+     *
+     * @return int
+     */
+    public function getAttributeId(): int
+    {
+        return $this->attributeId;
+    }
+
+    /**
+     * Set the attribute ID.
+     *
+     * @param int $attributeId
+     * @return void
+     */
+    public function setAttributeId(int $attributeId): self
+    {
+        $this->attributeId = $attributeId;
+
+        return $this;
+    }
+
     /**
      * Prepare query builder.
      *
@@ -16,24 +41,28 @@ class AttributeOptionDataGrid extends DataGrid
     {
         $tablePrefix = DB::getTablePrefix();
 
+        $this->attributeId ??= request()->id;
+
         $queryBuilder = DB::table('attribute_options')
             ->leftJoin('attribute_option_translations as attribute_option_label', function ($join) {
                 $join->on('attribute_option_label.attribute_option_id', '=', 'attribute_options.id');
             })
-            ->where('attribute_options.attribute_id', request()->id)
+            ->where('attribute_options.attribute_id', $this->attributeId)
             ->select(
                 'attribute_options.id',
                 'attribute_options.code',
-            );
+            )
+            ->groupBy('attribute_options.id');
 
         $locales = core()->getAllActiveLocales()->pluck('code');
 
         foreach ($locales as $locale) {
-            $localeColumn = $tablePrefix.'attribute_option_label.label';
-            $labelColumn = 'name_'.$locale;
+            $labelColumn = $tablePrefix.'attribute_option_label.label';
+            $localeColumn = $tablePrefix.'attribute_option_label.locale';
+            $labelAliasColumn = 'name_'.$locale;
 
             $queryBuilder->addSelect(DB::raw(
-                "(CASE WHEN {$localeColumn} IS NULL OR CHAR_LENGTH(TRIM({$localeColumn})) < 1 THEN NULL ELSE {$localeColumn} END) as {$labelColumn}"
+                "MAX(CASE WHEN {$localeColumn} = '{$locale}' AND CHAR_LENGTH(TRIM({$labelColumn})) > 0 THEN {$labelColumn} ELSE NULL END) as {$labelAliasColumn}"
             ));
         }
 
@@ -72,6 +101,37 @@ class AttributeOptionDataGrid extends DataGrid
                 'sortable'   => true,
             ]);
         }
+    }
 
+    /**
+     * Prepare actions.
+     *
+     * @return void
+     */
+    public function prepareActions()
+    {
+        if (bouncer()->hasPermission('catalog.attributes.edit')) {
+            $this->addAction([
+                'icon'   => 'icon-edit',
+                'index'  => 'edit',
+                'title'  => trans('admin::app.catalog.attributes.index.datagrid.edit'),
+                'method' => 'GET',
+                'url'    => function ($row) {
+                    return route('admin.catalog.attributes.options.update', ['attribute_id' => $this->attributeId, 'id' => $row->id]);
+                },
+            ]);
+        }
+
+        if (bouncer()->hasPermission('catalog.attributes.delete')) {
+            $this->addAction([
+                'icon'   => 'icon-delete',
+                'index'  => 'delete',
+                'title'  => trans('admin::app.catalog.attributes.index.datagrid.delete'),
+                'method' => 'DELETE',
+                'url'    => function ($row) {
+                    return route('admin.catalog.attributes.options.delete', ['attribute_id' => $this->attributeId, 'id' => $row->id]);
+                },
+            ]);
+        }
     }
 }

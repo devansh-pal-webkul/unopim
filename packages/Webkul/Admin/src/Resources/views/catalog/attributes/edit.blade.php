@@ -228,8 +228,8 @@
                                 </div>
 
                                 <x-admin::datagrid
-                                    :src="route('admin.catalog.attributes.options', $attribute->id)"
-                                    
+                                    :src="route('admin.catalog.attributes.options.index', $attribute->id)"
+                                    ref="optionsDataGrid"
                                 >
                                     <template #body="{ columns, records, performAction, applied, actions, isLoading }">
                                         <template v-if="! isLoading">
@@ -614,7 +614,9 @@
 
                         optionId: 0,
 
-                        src: "{{ route('admin.catalog.attributes.options', $attribute->id) }}",
+                        src: "{{ route('admin.catalog.attributes.options.edit', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}",
+
+                        optionCreateRoute: "{{ route('admin.catalog.attributes.options.store', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}",
                     }
                 },
 
@@ -633,45 +635,40 @@
                             this.optionId++;
                         }
 
-                        let foundIndex = this.optionsData.findIndex(item => item.id === params.id);
-
-                        if (foundIndex !== -1) {
-                            this.optionsData.splice(foundIndex, 1, params);
-                        } else {
-                            let existAlready = this.optionsData.findIndex(item => item.code.toLowerCase() === params.code.toLowerCase());
-
-                            if (existAlready !== -1) {
-                                this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('admin::app.catalog.attributes.edit.same-code-error')" });
-
-                                return;
-                            }
-
-                            this.optionsData.push(params);
-                        }
-
                         let formData = new FormData(this.$refs.editOptionsForm);
 
-                        const sliderImage = formData.get("swatch_value[]");
+                        this.$axios.put(
+                            "{{ route('admin.catalog.attributes.options.update', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}".replace('_ID', params.id),
+                            params
+                        )
+                            .then(response => {
+                                this.$emitter.emit('add-flash', {
+                                    type: 'success',
+                                    message: response.data.message,
+                                });
+                                
+                                this.$refs.optionsDataGrid.get();
 
-                        if (sliderImage) {
-                            params.swatch_value = sliderImage;
-                        }
+                                this.$refs.addOptionsRow.toggle();
 
-                        this.$refs.addOptionsRow.toggle();
-
-                        if (params.swatch_value instanceof File) {
-                            this.setFile(sliderImage, params.id);
-                        }
-
-                        resetForm();
+                                resetForm();
+                            })
+                            .catch(error => {
+                                if (error.response.status === 422) {
+                                    this.$refs.modelForm.setErrors(error.response.data.errors);
+                                }
+                            });
                     },
 
-                    checkAndPerformAction(id, action, performAction) {
-                        if (action.title === 'Delete') {
-                            performAction(action);
+                    async checkAndPerformAction(id, action, performAction) {
+                        if (action.index === 'edit') {
+                            let option = await this.getAttributeOption(id);
+                            this.editOptions(option);
+
+                            return;
                         }
-                        
-                        // TODO: open edit modal and save edited value
+
+                        performAction(action);
                     },
 
                     editOptions(value) {
@@ -700,31 +697,15 @@
                         }
                     },
 
-                    getAttributesOption() {
-                        this.$axios.get(`${this.src}`)
+                    getAttributeOption(id) {
+                        return this.$axios.get(this.src.replace('_ID', id))
                             .then(response => {
-                                let options = response.data;
+                                    let option = response.data.option;
 
-                                options.forEach((option) => {
-                                    let row = {
-                                        'id': option.id,
-                                        'code': option.code,
-                                        'sort_order': option.sort_order,
-                                        'swatch_value': option.swatch_value,
-                                        'swatch_value_url': option.swatch_value_url,
-                                        'notRequired': '',
-                                        'locales': {},
-                                        'isNew': false,
-                                        'isDelete': false,
-                                    };
+                                    this.optionsData.push(option);
 
-                                    option.translations.forEach((translation) => {
-                                        row['locales'][translation.locale] = translation.label ?? '';
-                                    });
-
-                                    this.optionsData.push(row);
+                                    return option;
                                 });
-                            });
                     },
 
                     setFile(file, id) {
