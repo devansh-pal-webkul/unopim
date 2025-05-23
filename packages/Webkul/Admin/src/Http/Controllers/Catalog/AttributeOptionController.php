@@ -3,19 +3,12 @@
 namespace Webkul\Admin\Http\Controllers\Catalog;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Validation\Rule;
-use Webkul\Admin\DataGrids\Catalog\AttributeDataGrid;
 use Webkul\Admin\DataGrids\Catalog\AttributeOptionDataGrid;
 use Webkul\Admin\Http\Controllers\Controller;
+use Webkul\Admin\Http\Requests\AttributeOptionForm;
 use Webkul\Admin\Http\Requests\MassDestroyRequest;
 use Webkul\Attribute\Repositories\AttributeOptionRepository;
-use Webkul\Attribute\Repositories\AttributeRepository;
-use Webkul\Attribute\Rules\NotSupportedAttributes;
-use Webkul\Core\Repositories\LocaleRepository;
-use Webkul\Core\Rules\Code;
-use Webkul\Product\Repositories\ProductRepository;
 
 class AttributeOptionController extends Controller
 {
@@ -39,36 +32,31 @@ class AttributeOptionController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created option.
      *
      * @return \Illuminate\Http\Response
      */
-    public function store()
+    public function store(int $attributeId, AttributeOptionForm $request)
     {
-        $this->validate(request(), [
-            'code' => ['required', 'not_in:type,attribute_family_id', 'unique:attributes,code', new Code, new NotSupportedAttributes],
-            'type' => 'required',
-        ]);
+        $requestData = $request->only('code', 'locales');
 
-        $requestData = request()->all();
+        $requestData['attribute_id'] = $attributeId;
 
-        Event::dispatch('catalog.attribute.create.before');
+        Event::dispatch('catalog.attribute.option.create.before', $requestData);
 
-        $attribute = $this->attributeRepository->create($requestData);
+        $attribute = $this->attributeOptionRepository->create($requestData);
 
-        Event::dispatch('catalog.attribute.create.after', $attribute);
+        Event::dispatch('catalog.attribute.option.create.after', $attribute);
 
-        session()->flash('success', trans('admin::app.catalog.attributes.create-success'));
+        session()->flash('success', trans('admin::app.catalog.attribute.option.create-success'));
 
         return redirect()->route('admin.catalog.attributes.index');
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\View\View
      */
-    public function edit(int $attributeId, int $id)
+    public function edit(int $attributeId, int $id): JsonResponse
     {
         $option = $this->attributeOptionRepository->find($id)->toArray();
 
@@ -86,25 +74,22 @@ class AttributeOptionController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @return \Illuminate\Http\Response
+     * Update attribute option
      */
     public function update(int $attributeId, int $id)
     {
-        //TODO: update attribute option translations
-        $requestData = request()->except(['code', 'attribute_id', 'id', 'translations']);
+        $this->validate(request(), ['locales.*.label' => 'nullable|string']);
+
+        $requestData = request()->only('locales');
 
         Event::dispatch('catalog.attribute.option.update.before', $id);
 
-        $requestData['label'] = $requestData['locales'];
-
-        $option = $this->attributeOptionRepository->update($requestData, $id);
+        $option = $this->attributeOptionRepository->update($requestData['locales'], $id);
 
         Event::dispatch('catalog.attribute.option.update.after', $option);
 
         return new JsonResponse([
-            'message' => trans('admin::app.catalog.attributes.update-success')
+            'message' => trans('admin::app.catalog.attribute.option.update-success'),
         ]);
     }
 
@@ -113,7 +98,7 @@ class AttributeOptionController extends Controller
      */
     public function destroy(int $attributeId, int $id): JsonResponse
     {
-        //TODO: add validation before delete to check if it is not being used in any product
+        // TODO: add validation before delete to check if it is not being used in any product
         $attribute = $this->attributeOptionRepository->findOrFail($id);
 
         try {

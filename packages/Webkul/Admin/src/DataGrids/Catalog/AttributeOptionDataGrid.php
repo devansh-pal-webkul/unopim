@@ -11,8 +11,6 @@ class AttributeOptionDataGrid extends DataGrid
 
     /**
      * Get the attribute ID.
-     *
-     * @return int
      */
     public function getAttributeId(): int
     {
@@ -21,9 +19,6 @@ class AttributeOptionDataGrid extends DataGrid
 
     /**
      * Set the attribute ID.
-     *
-     * @param int $attributeId
-     * @return void
      */
     public function setAttributeId(int $attributeId): self
     {
@@ -52,7 +47,8 @@ class AttributeOptionDataGrid extends DataGrid
                 'attribute_options.id',
                 'attribute_options.code',
             )
-            ->groupBy('attribute_options.id');
+            ->groupBy('attribute_options.id')
+            ->orderBy('attribute_options.sort_order', 'asc');
 
         $locales = core()->getAllActiveLocales()->pluck('code');
 
@@ -88,7 +84,7 @@ class AttributeOptionDataGrid extends DataGrid
             'type'       => 'string',
             'searchable' => true,
             'filterable' => true,
-            'sortable'   => true,
+            'sortable'   => false,
         ]);
 
         foreach ($locales as $locale) {
@@ -98,7 +94,7 @@ class AttributeOptionDataGrid extends DataGrid
                 'type'       => 'string',
                 'searchable' => true,
                 'filterable' => true,
-                'sortable'   => true,
+                'sortable'   => false,
             ]);
         }
     }

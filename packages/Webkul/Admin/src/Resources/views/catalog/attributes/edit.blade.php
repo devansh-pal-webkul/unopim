@@ -467,7 +467,7 @@
                 ref="modelForm"
             >
                 <form
-                    @submit.prevent="handleSubmit($event, storeOptions)"
+                    @submit.prevent="handleSubmit($event, storeOption)"
                     enctype="multipart/form-data"
                     ref="editOptionsForm"
                 >
@@ -616,7 +616,8 @@
 
                         src: "{{ route('admin.catalog.attributes.options.edit', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}",
 
-                        optionCreateRoute: "{{ route('admin.catalog.attributes.options.store', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}",
+                        optionCreateRoute: "{{ route('admin.catalog.attributes.options.store', ['attribute_id' => $attribute->id]) }}",
+                        optionUpdateRoute: "{{ route('admin.catalog.attributes.options.update', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}"
                     }
                 },
 
@@ -629,19 +630,20 @@
                     }
                 },
                 methods: {
-                    storeOptions(params, { resetForm, setValues }) {
-                        if (! params.id) {
-                            params.id = 'option_' + this.optionId;
-                            this.optionId++;
+                    storeOption(params, { resetForm, setValues }) {
+                        const updatedLocales = {};
+
+                        for (const [localeCode, label] of Object.entries(params.locales)) {
+                            updatedLocales[localeCode] = { label };
                         }
 
-                        let formData = new FormData(this.$refs.editOptionsForm);
+                        params.locales = updatedLocales;
 
-                        this.$axios.put(
-                            "{{ route('admin.catalog.attributes.options.update', ['attribute_id' => $attribute->id, 'id' => '_ID']) }}".replace('_ID', params.id),
-                            params
-                        )
-                            .then(response => {
+                        const request = params.id
+                            ? this.$axios.put(this.optionUpdateRoute.replace('_ID', params.id), params)
+                            : this.$axios.post(this.optionCreateRoute, params);
+
+                        request.then(response => {
                                 this.$emitter.emit('add-flash', {
                                     type: 'success',
                                     message: response.data.message,
@@ -685,18 +687,6 @@
                         this.$refs.addOptionsRow.toggle();
                     },
 
-                    removeOption(id) {
-                        let foundIndex = this.optionsData.findIndex(item => item.id === id);
-
-                        if (foundIndex !== -1) {
-                            if (this.optionsData[foundIndex].isNew) {
-                                this.optionsData.splice(foundIndex, 1);
-                            } else {
-                                this.optionsData[foundIndex].isDelete = true;
-                            }
-                        }
-                    },
-
                     getAttributeOption(id) {
                         return this.$axios.get(this.src.replace('_ID', id))
                             .then(response => {
@@ -706,19 +696,6 @@
 
                                     return option;
                                 });
-                    },
-
-                    setFile(file, id) {
-                        let dataTransfer = new DataTransfer();
-
-                        dataTransfer.items.add(file);
-
-                        // Use Set timeout because need to wait for render dom before set the src or get the ref value
-                        setTimeout(() => {
-                            this.$refs['image_' + id].src =  URL.createObjectURL(file);
-
-                            this.$refs['imageInput_' + id].files = dataTransfer.files;
-                        }, 0);
                     },
 
                     parseValue(value) {  
