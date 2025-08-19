@@ -31,7 +31,7 @@
                     ::id="name"
                     ::name="name"
                     ::rules="{ 'required': isTranslationEnabled }"
-                    ref="localelRef"
+                    ref="localeRef"
                     ::label="label"
                     ::value="targetLocales"
                     ::options="localeOption"
@@ -73,7 +73,7 @@
                 this.$emitter.on('source-channel-changed', (data) => {
                     if (data) {
                         this.sourceChannel = JSON.parse(data).id;
-                        this.$refs['localelRef'].selectedValue = null;
+                        this.$refs['localeRef'].selectedValue = null;
                     }
                 });
                 this.$emitter.on('source-locale-changed', (data) => {
@@ -116,14 +116,14 @@
                             }
 
                             this.localeOption = JSON.stringify(options);
-                            if (this.$refs['localelRef']) {
-                                this.$refs['localelRef'].selectedValue = null;
+                            if (this.$refs['localeRef']) {
+                                this.$refs['localeRef'].selectedValue = null;
                             }
 
                             if (options.length == 1) {
                                 this.targetLocales = options[0].id;
-                                if (this.$refs['localelRef']) {
-                                    this.$refs['localelRef'].selectedValue = options;
+                                if (this.$refs['localeRef']) {
+                                    this.$refs['localeRef'].selectedValue = options;
                                 }
                             }
                         })

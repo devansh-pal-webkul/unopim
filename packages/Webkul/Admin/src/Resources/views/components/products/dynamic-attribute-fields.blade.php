@@ -8,6 +8,19 @@
     'variantFields'      => [],
 ])
 
+@php
+    $globaltranslationEnabled = core()->getConfigData('general.magic_ai.translation.enabled');
+
+    if ($globaltranslationEnabled != 0) {
+        $channelValue = core()->getConfigData('general.magic_ai.translation.source_channel');
+        $localeValue = core()->getConfigData('general.magic_ai.translation.source_locale');
+        $targetChannel = core()->getConfigData('general.magic_ai.translation.target_channel');
+        $targetlocales = core()->getConfigData('general.magic_ai.translation.target_locale');
+        $targetlocales = json_encode(explode(',', $targetlocales) ?? []);
+        $model = core()->getConfigData('general.magic_ai.translation.ai_model');
+    }
+@endphp
+
 @foreach($fields as $field)
     @php
         $isLocalizable = $field->isLocaleBasedAttribute();
@@ -54,20 +67,9 @@
             </x-admin::form.control-group.label>
 
             <div class="self-end mb-2 text-xs flex gap-1 items-center">
-                @php
-                    $globaltranslationEnabled = core()->getConfigData('general.magic_ai.translation.enabled');
-                @endphp
 
                 @if (($fieldType == 'text' || $fieldType == 'textarea') && ($field->ai_translate != 0 && $globaltranslationEnabled != 0 ))
                     <span>
-                        @php
-                            $channelValue = core()->getConfigData('general.magic_ai.translation.source_channel');
-                            $localeValue = core()->getConfigData('general.magic_ai.translation.source_locale');
-                            $targetChannel = core()->getConfigData('general.magic_ai.translation.target_channel');
-                            $targetlocales = core()->getConfigData('general.magic_ai.translation.target_locale');
-                            $targetlocales = json_encode(explode(',', $targetlocales) ?? []);
-                            $model = core()->getConfigData('general.magic_ai.translation.ai_model');
-                        @endphp
                         <v-translate-form
                             :channel-value="{{ json_encode($channelValue) }}"
                             :locale-value='@json($localeValue)'
@@ -399,13 +401,16 @@
                                     @php
                                         $channels = core()->getAllChannels();
                                         $options = [];
-                                        foreach($channels as $channel)
-                                            {
-                                                $options[] = [
-                                                    'id' => $channel->code,
-                                                    'label' => $channel->name,
-                                                    ];
-                                            }
+
+                                        foreach ($channels as $channel) {
+                                            $channelName = $channel->name;
+
+                                            $options[] = [
+                                                'id'    => $channel->code,
+                                                'label' => empty($channelName) ? "[$channel->code]" : $channelName,
+                                            ];
+                                        }
+
                                         $optionsInJson = json_encode($options);
                                     @endphp
                                     <x-admin::form.control-group.control
@@ -413,7 +418,7 @@
                                         name="channel"
                                         rules="required"
                                         ::value="sourceChannel"
-                                        :options="json_encode($options)"
+                                        :options="$optionsInJson"
                                         @input="getSourceLocale"
                                     >
                                     </x-admin::form.control-group.control>
@@ -431,7 +436,7 @@
                                         name="targetChannel"
                                         rules="required"
                                         ::value="targetChannel"
-                                        :options="json_encode($options)"
+                                        :options="$optionsInJson"
                                         @input="getTargetLocale"
                                     >
                                     </x-admin::form.control-group.control>
@@ -448,7 +453,7 @@
                                         type="select"
                                         name="locale"
                                         rules="required"
-                                        ref="localelRef"
+                                        ref="localeRef"
                                         ::value="sourceLocale"
                                         ::options="localeOption"
                                         @input="resetTargetLocales"
@@ -692,14 +697,14 @@
                         this.sourceChannel = JSON.parse(event).id;
                         this.getLocale(this.sourceChannel)
                             .then((options) => {
-                                if (this.$refs['localelRef']) {
-                                    this.$refs['localelRef'].selectedValue = null;
+                                if (this.$refs['localeRef']) {
+                                    this.$refs['localeRef'].selectedValue = null;
                                 }
                                 this.localeOption = JSON.stringify(options);
                                 if (options.length == 1) {
                                     this.sourceLocale = options[0].id;
-                                    if (this.$refs['localelRef']) {
-                                        this.$refs['localelRef'].selectedValue = options[0];
+                                    if (this.$refs['localeRef']) {
+                                        this.$refs['localeRef'].selectedValue = options[0];
                                     }
                                 }
                             })

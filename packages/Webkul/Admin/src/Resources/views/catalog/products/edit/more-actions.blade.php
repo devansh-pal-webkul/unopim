@@ -61,13 +61,16 @@
                                     @php
                                         $channels = core()->getAllChannels();
                                         $options = [];
-                                        foreach($channels as $channel)
-                                        {
+
+                                        foreach ($channels as $channel) {
+                                            $channelName = $channel->name;
+
                                             $options[] = [
-                                                'id' => $channel->code,
-                                                'label' => $channel->name,
-                                                ];
+                                                'id'    => $channel->code,
+                                                'label' => empty($channelName) ? "[$channel->code]" : $channelName,
+                                            ];
                                         }
+
                                         $optionsInJson = json_encode($options);
                                     @endphp
                                     <x-admin::form.control-group.control
@@ -75,7 +78,7 @@
                                         name="channel"
                                         rules="required"
                                         ::value="sourceChannel"
-                                        :options="json_encode($options)"
+                                        :options="$optionsInJson"
                                         @input="getSourceLocale"
                                     >
                                     </x-admin::form.control-group.control>
@@ -93,7 +96,7 @@
                                             name="targetChannel"
                                             rules="required"
                                             ::value="targetChannel"
-                                            :options="json_encode($options)"
+                                            :options="$optionsInJson"
                                             @input="getTargetLocale"
                                         >
                                         </x-admin::form.control-group.control>
@@ -110,7 +113,7 @@
                                         type="select"
                                         name="locale"
                                         rules="required"
-                                        ref="localelRef"
+                                        ref="localeRef"
                                         ::value="sourceLocale"
                                         ::options="localeOption"
                                         @input="resetTargetLocales"
@@ -384,8 +387,8 @@
 
                         this.getLocale(this.sourceChannel)
                             .then((options) => {
-                                if (this.$refs['localelRef']) {
-                                    this.$refs['localelRef'].selectedValue = null;
+                                if (this.$refs['localeRef']) {
+                                    this.$refs['localeRef'].selectedValue = null;
                                 }
 
                                 this.localeOption = JSON.stringify(options);
@@ -393,8 +396,8 @@
                                 if (options.length == 1) {
                                     this.sourceLocale = options[0].id;
 
-                                    if (this.$refs['localelRef']) {
-                                        this.$refs['localelRef'].selectedValue = options[0];
+                                    if (this.$refs['localeRef']) {
+                                        this.$refs['localeRef'].selectedValue = options[0];
                                     }
                                 }
                             })

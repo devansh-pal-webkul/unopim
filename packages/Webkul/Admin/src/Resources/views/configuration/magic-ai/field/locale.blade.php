@@ -26,7 +26,7 @@
                     ::id="name"
                     ::name="name"
                     ::rules="{ 'required': isTranslationEnabled }"
-                    ref="localelRef"
+                    ref="localeRef"
                     ::label="label"
                     ::value="value"
                     ::options="localeOption"
@@ -82,14 +82,14 @@
                                 .then((response) => {
                                     const options = response.data?.locales;
                                     this.localeOption = JSON.stringify(options);
-                                    if (this.$refs['localelRef']) {
-                                        this.$refs['localelRef'].selectedValue = null;
+                                    if (this.$refs['localeRef']) {
+                                        this.$refs['localeRef'].selectedValue = null;
                                     }
 
                                     if (options.length === 1) {
                                         this.sourceLocale = options[0].id;
-                                        if (this.$refs['localelRef']) {
-                                            this.$refs['localelRef'].selectedValue = options[0];
+                                        if (this.$refs['localeRef']) {
+                                            this.$refs['localeRef'].selectedValue = options[0];
                                         }
                                     }
                                 })
@@ -123,14 +123,14 @@
                         .then((response) => {
                             const options = response.data?.locales;
                             this.localeOption = JSON.stringify(options);
-                            if (this.$refs['localelRef']) {
-                                this.$refs['localelRef'].selectedValue = null;
+                            if (this.$refs['localeRef']) {
+                                this.$refs['localeRef'].selectedValue = null;
                             }
 
                             if (options.length === 1) {
                                 this.sourceLocale = options[0].id;
-                                if (this.$refs['localelRef']) {
-                                    this.$refs['localelRef'].selectedValue = options[0];
+                                if (this.$refs['localeRef']) {
+                                    this.$refs['localeRef'].selectedValue = options[0];
                                 }
                             }
                         })

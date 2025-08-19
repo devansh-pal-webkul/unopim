@@ -61,7 +61,8 @@
             ],
             data: function() {
                 return {
-                    isTranslationEnabled: Boolean('{{ core()->getConfigData("general.magic_ai.translation.enabled") == 1 }}'),                }
+                    isTranslationEnabled: Boolean('{{ core()->getConfigData("general.magic_ai.translation.enabled") == 1 }}'),
+                }
             },
 
             mounted() {
