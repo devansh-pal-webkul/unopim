@@ -1,5 +1,4 @@
 @inject('coreConfigRepository', 'Webkul\Core\Repositories\CoreConfigRepository')
-@inject('magicAI', 'Webkul\MagicAI\MagicAI')
 
 @php
     $nameKey = $item['key'] . '.' . $field['name'];
@@ -19,14 +18,14 @@
     <script type="text/x-template" id="v-translation-locale-template">
         <div class="grid gap-2.5 content-start">
             <x-admin::form.control-group class="last:!mb-0 w-full" v-if="localeOption">
-                <x-admin::form.control-group.label>
+                <x-admin::form.control-group.label ::class="isTranslationEnabled ? 'required' : ''">
                     @{{ label }}
                 </x-admin::form.control-group.label>
                 <x-admin::form.control-group.control
                     type="select"
                     ::id="name"
                     ::name="name"
-                    rules="required"
+                    ::rules="{ 'required': isTranslationEnabled }"
                     ref="localelRef"
                     ::label="label"
                     ::value="value"
@@ -50,11 +49,17 @@
                 return {
                     localeOption: null,
                     value: this.value,
-
-                }
+                    isTranslationEnabled: Boolean('{{ core()->getConfigData("general.magic_ai.translation.enabled") == 1 }}'),                }
             },
             mounted() {
                 this.fetchlocales();
+
+                this.$emitter.on('config-value-changed', (data) => {
+                    if (data.fieldName == 'general[magic_ai][translation][enabled]') {
+                        this.isTranslationEnabled = parseInt(data.value || 0) === 1;
+                    }
+                });
+
                 this.$emitter.on('config-channel-changed', (data) => {
                     try {
                         let event = data.value;
@@ -102,7 +107,14 @@
 
             methods: {
                 fetchlocales() {
+                    if (! this.channel) {
+                        this.localeOption = '[]';
+
+                        return;
+                    }
+
                     const channelId = this.channel;
+
                     this.$axios.get("{{ route('admin.catalog.product.get_locale') }}", {
                             params: {
                                 channel: channelId
