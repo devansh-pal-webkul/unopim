@@ -87,7 +87,8 @@
                     selectedValue: this.value,
                     selectedModelOption: null,
                     componentKey: 0,
-                    isTranslationEnabled: Boolean('{{ core()->getConfigData("general.magic_ai.translation.enabled") == 1 }}'),                }
+                    isTranslationEnabled: Boolean('{{ core()->getConfigData("general.magic_ai.translation.enabled") == 1 }}')
+                };
             },
 
             mounted() {

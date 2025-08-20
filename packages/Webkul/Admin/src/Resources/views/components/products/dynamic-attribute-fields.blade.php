@@ -11,7 +11,7 @@
 @php
     $globaltranslationEnabled = core()->getConfigData('general.magic_ai.translation.enabled');
 
-    if ($globaltranslationEnabled != 0) {
+    if ($globaltranslationEnabled == 1) {
         $channelValue = core()->getConfigData('general.magic_ai.translation.source_channel');
         $localeValue = core()->getConfigData('general.magic_ai.translation.source_locale');
         $targetChannel = core()->getConfigData('general.magic_ai.translation.target_channel');
@@ -68,7 +68,7 @@
 
             <div class="self-end mb-2 text-xs flex gap-1 items-center">
 
-                @if (($fieldType == 'text' || $fieldType == 'textarea') && ($field->ai_translate != 0 && $globaltranslationEnabled != 0 ))
+                @if (($fieldType == 'text' || $fieldType == 'textarea') && ($field->ai_translate == 1 && $globaltranslationEnabled == 1))
                     <span>
                         <v-translate-form
                             :channel-value="{{ json_encode($channelValue) }}"
@@ -81,7 +81,8 @@
                             :field-type="'{{$fieldType}}'"
                             :model="'{{$model}}'"
                             :current-local-code="'{{ $currentLocaleCode }}'"
-                            :current-channel="'{{ $currentChannelCode }}'">
+                            :current-channel="'{{ $currentChannelCode }}'"
+                        >
                             <div class="flex  gap-4 justify-between items-center max-sm:flex-wrap">
                                 <div class="flex gap-x-2.5 items-center">
                                     <button
@@ -583,7 +584,7 @@
                         </x-slot>
 
                         <x-slot:footer>
-                            <div class="flex gap-x-2.5 items-center">
+                            <div class="flex gap-x-2.5 items-center text-base">
                                 <template v-if="! translatedData && ! nothingToTranslate">
                                     <button
                                         type="submit"

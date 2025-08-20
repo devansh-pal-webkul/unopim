@@ -283,7 +283,7 @@ return [
                     'target-channel'          => 'Target Channel',
                     'attributes'              => 'Attributes',
                     'source-content'          => 'Source Content',
-                    'tranlated-job-processed' => 'Transalated contents store job processed.',
+                    'tranlated-job-processed' => 'Translation job launched for product update',
                 ],
 
                 'product-info' => [

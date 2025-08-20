@@ -28,8 +28,6 @@
                 <div class="flex gap-x-2.5 items-center">
                     {!! view_render_event('unopim.pdf.product.edit.actions.before', ['product' => $product]) !!}
 
-                    @include('admin::catalog.products.edit.more-actions')
-
                     <!-- Back Button -->
                     <a
                         href="{{ route('admin.catalog.products.index') }}"
@@ -57,7 +55,7 @@
 
         <!-- Channel and Locale Switcher -->
         <div class="flex gap-4 justify-between items-center mt-7 max-md:flex-wrap">
-            <div class="flex gap-x-1 items-center justify-between w-full">
+            <div class="flex gap-x-1 items-center w-full">
                 <div class="flex relative">
                     <!-- Channel Switcher -->
                     <x-admin::dropdown>
@@ -123,6 +121,8 @@
                     </x-admin::dropdown>
                 </div>
             </div>
+
+            @include('admin::catalog.products.edit.more-actions')
         </div>
 
         {!! view_render_event('unopim.admin.catalog.product.edit.actions.after', ['product' => $product]) !!}

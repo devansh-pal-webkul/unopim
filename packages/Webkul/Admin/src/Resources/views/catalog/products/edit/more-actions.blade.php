@@ -1,8 +1,8 @@
-{!! view_render_event('unopim.admin.catalog.product.edit.other-actions.before', ['product' => $product]) !!}
+{!! view_render_event('unopim.admin.catalog.product.edit.more-actions.before', ['product' => $product]) !!}
 
 <v-custom-dropdown></v-custom-dropdown>
 
-{!! view_render_event('unopim.admin.catalog.product.edit.other-actions.after', ['product' => $product]) !!}
+{!! view_render_event('unopim.admin.catalog.product.edit.more-actions.after', ['product' => $product]) !!}
 
 @pushOnce('scripts')
     <script type="text/x-template" id="v-translate-attribute-template">
@@ -32,7 +32,7 @@
                         </p>
                     </x-slot>
                     <x-slot:content>
-                        <x-admin::form.control-group v-if="attributesOptions" >
+                        <x-admin::form.control-group v-if="attributesOptions">
                             <div class="flex flex-row gap-4 mb-5" v-show="! translatedValues && ! nothingToTranslate">
                                 <x-admin::form.control-group.label class="required w-full">
                                     @lang('admin::app.catalog.products.edit.translate.attributes')
@@ -45,11 +45,10 @@
                                         rules="required"
                                         ::value="attributes"
                                         ::options="attributesOptions"
-                                        class="w-full "
-                                    >
-                                    </x-admin::form.control-group.control>
+                                        class="w-full"
+                                    />
 
-                                    <x-admin::form.control-group.error control-name="attributes"></x-admin::form.control-group.error>
+                                    <x-admin::form.control-group.error control-name="attributes" />
                                 </div>
                             </div>
 
@@ -352,7 +351,7 @@
 
                         })
                         .catch((error) => {
-                        console.error('Error fetching attributes:', error);
+                            console.error('Error fetching attributes:', error);
                             throw error;
                         });
                 },
@@ -570,7 +569,7 @@
                     </h6>
                 </header>
                 <ul class="text-gray-700 rounded cursor-pointer]">
-                    {!! view_render_event('unopim.admin.catalog.product.edit.other-actions.list.before', ['product' => $product]) !!}
+                    {!! view_render_event('unopim.admin.catalog.product.edit.more-actions.list.before', ['product' => $product]) !!}
 
                     @php
                         $channelValue = core()->getConfigData('general.magic_ai.translation.source_channel');
@@ -591,7 +590,7 @@
                         </v-translate-attribute>
                     @endif
 
-                    {!! view_render_event('unopim.admin.catalog.product.edit.other-actions.list.after', ['product' => $product]) !!}
+                    {!! view_render_event('unopim.admin.catalog.product.edit.more-actions.list.after', ['product' => $product]) !!}
                 </ul>
             </div>
         </div>
