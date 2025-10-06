@@ -7,7 +7,7 @@
 @pushOnce('scripts')
     <script type="text/x-template" id="v-translate-attribute-template">
         <li
-            class="w-full hover:bg-gray-100 dark:hover:bg-cherry-800 cursor-pointer p-3"
+            class="w-full hover:bg-gray-100 dark:hover:bg-cherry-800 cursor-pointer px-3 py-2"
             @click="resetForm();fetchAttribute();fetchSourceLocales();fetchTargetLocales();$refs.translationModal.toggle();"
         >
             <span
@@ -27,11 +27,12 @@
                 <x-admin::modal ref="translationModal">
                     <x-slot:header>
                         <p class="flex  items-center text-lg text-gray-800 dark:text-white font-bold">
-                            <span class="icon-magic text-2xl text-gray-800"></span>
                             @lang('admin::app.catalog.products.edit.translate.title')
                         </p>
                     </x-slot>
                     <x-slot:content>
+                        <section class="flex align-center modal-steps-section">
+                        </section>
                         <x-admin::form.control-group v-if="attributesOptions">
                             <div class="flex flex-row gap-4 mb-5" v-show="! translatedValues && ! nothingToTranslate">
                                 <x-admin::form.control-group.label class="required w-full">
@@ -553,22 +554,19 @@
     <script type="text/x-template" id="v-custom-dropdown-template">
         <div class="relative inline-block text-left">
             <span
-                class="text-2xl cursor-pointer flex p-2 w-full"
+                class="text-gray-700 cursor-pointer flex p-2 w-full align-center"
                 @click="toggleDropdown"
                 title="@lang('admin::app.catalog.products.edit.more-actions')"
             >
-                <span class="icon-dot w-3"></span>
-                <span class="icon-dot w-3"></span>
-                <span class="icon-dot w-3"></span>
+                More 
+                <i class="text-2xl icon-chevron-down"></i>
             </span>
 
-            <div v-if="isOpen" class="absolute right-0.5 top-0.5 w-36 max-sm:left-1/2 bg-white dark:bg-cherry-900 shadow-lg z-[10001] text-gray-700 border-2 border-violet-100 dark:border-cherry-800 min-h[110px] rounded-md">
-                <header class="text-sm text-violet-600 dark:text-slate-50 p-2 mx-2">
-                    <h6 class="py-2 border-b-2 border-violet-700">
-                        @lang('admin::app.catalog.products.edit.more-actions')
-                    </h6>
-                </header>
-                <ul class="text-gray-700 rounded cursor-pointer]">
+            <div
+                v-if="isOpen"
+                class="absolute right-0.5 top-0.8 w-36 max-sm:left-1/2 bg-white dark:bg-cherry-900 shadow-lg z-[10001] text-gray-700 border-2 border-violet-100 dark:border-cherry-800 min-h[110px] rounded-md"
+            >
+                <ul class="text-gray-700 rounded cursor-pointer tracking-wide">
                     {!! view_render_event('unopim.admin.catalog.product.edit.more-actions.list.before', ['product' => $product]) !!}
 
                     @php
@@ -579,6 +577,7 @@
                         $targetlocales = json_encode(explode(',', $targetlocales) ?? []);
                         $model = core()->getConfigData('general.magic_ai.translation.ai_model');
                     @endphp
+
                     @if (core()->getConfigData('general.magic_ai.translation.enabled'))
                         <v-translate-attribute
                             :channel-value="{{ json_encode($channelValue) }}"
