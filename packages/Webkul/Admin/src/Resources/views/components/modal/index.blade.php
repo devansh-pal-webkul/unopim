@@ -115,6 +115,7 @@
             data() {
                 return {
                     isOpen: this.isActive,
+                    modalType: this.type,
                     sizeMap: {
                         small: "max-w-[400px]",
                         medium: "max-w-[568px]",
@@ -125,8 +126,14 @@
 
             computed: {
                 modalSize() {
-                    return this.sizeMap[this.type] || "max-w-[568px]"; // Default to medium
+                    return this.sizeMap[this.modalType] || this.sizeMap.medium; // Default to medium
                 }
+            },
+
+            mounted() {
+                this.$emitter.on('modal-size-change', (e) => {
+                    this.modalType = 'large';
+                });
             },
 
             methods: {

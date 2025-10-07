@@ -122,7 +122,7 @@
                 </div>
             </div>
 
-            @include('admin::catalog.products.edit.more-actions')
+            @include('admin::catalog.products.edit.more-actions.index')
         </div>
 
         {!! view_render_event('unopim.admin.catalog.product.edit.actions.after', ['product' => $product]) !!}
