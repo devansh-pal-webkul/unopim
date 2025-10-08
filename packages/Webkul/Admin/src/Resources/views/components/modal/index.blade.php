@@ -119,7 +119,8 @@
                     sizeMap: {
                         small: "max-w-[400px]",
                         medium: "max-w-[568px]",
-                        large: "max-w-[900px]"
+                        large: "max-w-[900px]",
+                        full: "max-w-[calc(100vw-100px)]"
                     }
                 };
             },
@@ -131,8 +132,8 @@
             },
 
             mounted() {
-                this.$emitter.on('modal-size-change', (e) => {
-                    this.modalType = 'large';
+                this.$emitter.on('modal-size-change', (size) => {
+                    this.modalType = size;
                 });
             },
 

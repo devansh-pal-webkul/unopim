@@ -37,19 +37,19 @@
             ref="translationForm"
         >
             <form @submit="handleSubmit($event, translate)" ref="translationForm">
-                <x-admin::modal ref="translationModal">
+                <x-admin::modal ref="translationModal" @toggle="handleToggle">
                     <x-slot:header>
                         <p class="flex  items-center text-lg text-gray-800 dark:text-white font-bold">
                             @lang('admin::app.catalog.products.edit.translate.title')
                         </p>
                     </x-slot>
-                    <x-slot:content class="flex gap-2.5 mt-3.5 max-xl:flex-wrap">
-                        <section class="left-column flex flex-col gap-2 flex-2 w-full">
+                    <x-slot:content class="flex gap-5 mt-3.5 max-xl:flex-wrap">
+                        <section class="left-column flex flex-col gap-2 flex-2" :class="currentStep === 3 ? '' : 'w-full'">
                             <section class="grid gap-2 items-center justify-center modal-steps-section mb-4 dark:text-white">
                                 <div class="flex justify-center items-center">
                                     <div class="w-3 h-3 bg-violet-700 rounded-full"></div>
-                                    <hr class="w-[200px] dark:bg-cherry-600 h-1 border-0" :class="currentStep === 2 ? 'bg-violet-700' : 'bg-violet-100'">
-                                    <div class="w-3 h-3 bg-violet-400 rounded-full" :class="currentStep === 2 ? 'bg-violet-700' : 'bg-violet-400'"></div>
+                                    <hr class="w-[200px] dark:bg-cherry-600 h-1 border-0" :class="currentStep >= 2 ? 'bg-violet-700' : 'bg-violet-100'">
+                                    <div class="w-3 h-3 bg-violet-400 rounded-full" :class="currentStep >= 2 ? 'bg-violet-700' : 'bg-violet-400'"></div>
                                 </div>
     
                                 <div class="flex justify-around items-center text-center dark:text-slate-50">
@@ -92,6 +92,7 @@
                                         ::value="sourceChannel"
                                         :options="$optionsInJson"
                                         @input="getSourceLocale"
+                                        ::disabled="currentStep > 2"
                                     >
                                     </x-admin::form.control-group.control>
     
@@ -112,6 +113,7 @@
                                         ::value="sourceLocale"
                                         ::options="localeOption"
                                         @input="resetTargetLocales"
+                                        ::disabled="currentStep > 2"
                                     >
                                     </x-admin::form.control-group.control>
     
@@ -132,6 +134,7 @@
                                             ::value="attributes ?? []"
                                             ::options="attributesOptions"
                                             class="w-full"
+                                            ::disabled="currentStep > 2"
                                         />
     
                                         <x-admin::form.control-group.error control-name="attributes" />
@@ -139,7 +142,7 @@
                                 </x-admin::form.control-group>
                             </section>
     
-                            <template v-if="currentStep === 2">
+                            <template v-if="currentStep > 1">
                                 <h2 class="mt-6 mb-2 text-center">Step 2: Select Target Channel and Languages</h2>
                                 <section class="bg-violet-50 dark:bg-cherry-800 rounded-md mb-2 p-3" id="step-2">
                                     <h3 class="dark:text-white mb-2 text-sm font-bold">
@@ -157,6 +160,7 @@
                                             ::value="targetChannel"
                                             :options="$optionsInJson"
                                             @input="getTargetLocale"
+                                            ::disabled="currentStep > 2"
                                         />
                                         <x-admin::form.control-group.error control-name="targetChannel" />
                                     </x-admin::form.control-group>
@@ -175,6 +179,7 @@
                                             ::options="targetLocOptions"
                                             track-by="id"
                                             label-by="label"
+                                            ::disabled="currentStep > 2"
                                         />
                                         <x-admin::form.control-group.error control-name="targetLocale" />
                                     </x-admin::form.control-group>
@@ -194,7 +199,48 @@
                                 />
                             </x-admin::form.control-group>
                         </section>
+
+                        <!-- Translated Content -->
                         <section class="right-column flex flex-col gap-2 w-full flex-1 max-xl:flex-auto" v-if="translatedValues">
+                            <table class="table-fixed border-4 border-violet-50 border-collapse w-full dark:border-cherry-700 dark:text-slate-50">
+                                <thead>
+                                    <th
+                                        class="font-semibold relative border border-white dark:bg-cherry-700 dark:border-cherry-800 bg-violet-50 text-center"
+                                        v-for="(data, index) in translatedValues.headers"
+                                        v-text="data"
+                                    ></th>
+                                </thead>
+                                 <tbody ref="tbody">
+                                    <tr
+                                        class="border-b dark:border-cherry-700"
+                                        v-for="(data, locale) in translatedValues.translated"
+                                    >
+                                        <td
+                                            class="sticky left-0 z-10 bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
+                                        >
+                                            <input
+                                                :value="locale"
+                                                type="text"
+                                                :name="'test' + index"
+                                                class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all  focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
+                                            />
+                                        </td>
+
+                                        <td
+                                            class="bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
+                                            v-for="(translatedValue, index) in data"
+                                        >
+                                            <input
+                                                :value="translatedValue"
+                                                type="text"
+                                                :name="'test' + index"
+                                                class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all  focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
+                                            />
+                                        </td>
+                                    </tr>
+                                 </tbody>
+                            </table>
+
                             <x-admin::form.control-group class="mt-5">
                                 <div class="w-full">
                                     <div class="flex flex-row justify-around gap-5 mb-4">
@@ -550,7 +596,9 @@
                             if (translatedData.length != 0) {
                                 this.translatedValues = response.data;
 
-                                this.$emitter.emit('modal-size-change', 'large');
+                                this.currentStep += 1;
+
+                                this.$emitter.emit('modal-size-change', 'full');
                             } else {
                                 this.nothingToTranslate = 'Data not available for translation in the source channel and locale';
                             }
@@ -608,6 +656,13 @@
                     e.stopPropagation();
 
                     this.currentStep += 1;
+                },
+                handleToggle(params) {
+                    if (false === params?.isActive) {
+                        this.currentStep = 1;
+
+                        this.$emitter.emit('modal-size-change', 'medium');
+                    }
                 }
             },
         });
