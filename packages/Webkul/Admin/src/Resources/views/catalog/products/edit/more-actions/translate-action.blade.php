@@ -39,12 +39,12 @@
             <form @submit="handleSubmit($event, translate)" ref="translationForm">
                 <x-admin::modal ref="translationModal" @toggle="handleToggle">
                     <x-slot:header>
-                        <p class="flex  items-center text-lg text-gray-800 dark:text-white font-bold">
+                        <p class="flex items-center text-lg text-gray-800 dark:text-white font-bold">
                             @lang('admin::app.catalog.products.edit.translate.title')
                         </p>
                     </x-slot>
                     <x-slot:content class="flex gap-5 mt-3.5 max-xl:flex-wrap">
-                        <section class="left-column flex flex-col gap-2 flex-2" :class="currentStep === 3 ? '' : 'w-full'">
+                        <section class="left-column flex flex-col gap-2 flex-1/5" :class="currentStep === 3 ? '' : 'w-full'">
                             <section class="grid gap-2 items-center justify-center modal-steps-section mb-4 dark:text-white">
                                 <div class="flex justify-center items-center">
                                     <div class="w-3 h-3 bg-violet-700 rounded-full"></div>
@@ -201,7 +201,8 @@
                         </section>
 
                         <!-- Translated Content -->
-                        <section class="right-column flex flex-col gap-2 w-full flex-1 max-xl:flex-auto" v-if="translatedValues">
+                        <section class="right-column flex flex-col gap-2 w-full flex-2 max-xl:flex-auto" v-if="translatedValues">
+                            <h3 class="text-gray-800 dark:text-white font-medium">Translated Content</h3>
                             <table class="table-fixed border-4 border-violet-50 border-collapse w-full dark:border-cherry-700 dark:text-slate-50">
                                 <thead>
                                     <th
@@ -216,121 +217,29 @@
                                         v-for="(data, locale) in translatedValues.translated"
                                     >
                                         <td
-                                            class="sticky left-0 z-10 bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
+                                            class="bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
                                         >
-                                            <input
-                                                :value="locale"
-                                                type="text"
-                                                :name="'test' + index"
+                                            <span
+                                                v-text="locale"
                                                 class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all  focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
-                                            />
+                                            >
+                                            </span>
                                         </td>
-
                                         <td
                                             class="bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
-                                            v-for="(translatedValue, index) in data"
+                                            v-for="(translatedField) in data"
                                         >
                                             <input
-                                                :value="translatedValue"
-                                                type="text"
-                                                :name="'test' + index"
-                                                class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all  focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
+                                                :value="translatedField.content"
+                                                :type="translatedValues.fields[translatedField.field]?.type == 'textarea' ? 'textarea' : 'text'"
+                                                :name="translatedField.field + '_' + locale"
+                                                v-model="translatedField.content"
+                                                class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
                                             />
                                         </td>
                                     </tr>
                                  </tbody>
                             </table>
-
-                            <x-admin::form.control-group class="mt-5">
-                                <div class="w-full">
-                                    <div class="flex flex-row justify-around gap-5 mb-4">
-                                        <p class="text-sm text-gray-800 dark:text-white font-bold">@lang('admin::app.catalog.products.edit.translate.source-content')</p>
-                                        <p class="text-sm text-gray-800 dark:text-white font-bold">@lang('admin::app.catalog.products.edit.translate.translated-content')</p>
-                                    </div>
-
-                                    <div v-for="(data,index) in translatedValues" :key="index" class="mb-4 flex flex-row gap-5">
-                                        <div class="w-full">
-                                            <div class="inline-flex justify-between w-full">
-                                                <x-admin::form.control-group.label class="text-left pr-2">
-                                                    @{{data.fieldLabel}}
-                                                </x-admin::form.control-group.label>
-                                                <div class="self-end mb-2 text-xs flex gap-1 items-center">
-                                                    <span class="icon-channel uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border text- border-gray-200  text-gray-600 dark:!text-gray-600">
-                                                        @{{sourceChannel}}
-                                                    </span>
-                                                    <span class="icon-language uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border border-gray-200  text-gray-600 dark:!text-gray-600">
-                                                        @{{sourceLocale}}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <x-admin::form.control-group.control
-                                                type="text"
-                                                class="h-[30px] w-full"
-                                                ::name="data.fieldName"
-                                                ::value="data.sourceData"
-                                                readOnly
-                                                disabled
-                                                v-if="data.type == 'text'"
-                                            />
-
-                                            <x-admin::form.control-group.control
-                                                type="textarea"
-                                                class="h-[75px] w-full"
-                                                ::name="data.fieldName"
-                                                ::value="data.sourceData"
-                                                readOnly
-                                                disabled
-                                                v-if="data.type == 'textarea'"
-                                            />
-
-                                        </div>
-
-                                        <div class="w-full">
-                                            <div class="inline-flex justify-between w-full">
-                                                <x-admin::form.control-group.label class="text-left">
-                                                    @{{data.fieldLabel}}
-                                                </x-admin::form.control-group.label>
-                                                <div class="self-end mb-2 text-xs flex gap-1 items-center">
-                                                    <span class="icon-channel uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border text- border-gray-200 text-gray-600 dark:!text-gray-600">
-                                                        @{{targetChannel}}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div class="overflow-y-auto h-40 space-y-4 border rounded-lg p-2">
-                                                <div v-for="(item, idx) in data.translatedData"
-                                                    :key="idx"
-                                                    class="flex flex-col space-y-0"
-                                                >
-                                                    <x-admin::form.control-group.label class="flex justify-end text-right mb-0">
-                                                        <span class="icon-language uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 dark:!text-gray-600">
-                                                            @{{ item.locale }}
-                                                        </span>
-                                                    </x-admin::form.control-group.label>
-
-                                                    <x-admin::form.control-group.control
-                                                        type="text"
-                                                        class="h-[30px] w-full border-gray-300 rounded mt-0"
-                                                        ::name="`${data.fieldName}_${item.locale}`"
-                                                        ::value="item.content"
-                                                        v-model="item.content"
-                                                        v-if="data.type == 'text'"
-                                                    />
-                                                    <x-admin::form.control-group.control
-                                                        type="textarea"
-                                                        class="h-[75px] w-full border-gray-300 rounded mt-0"
-                                                        ::name="`${data.fieldName}_${item.locale}`"
-                                                        ::value="item.content"
-                                                        v-model="item.content"
-                                                        v-if="data.type == 'textarea'"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </x-admin::form.control-group>
                         </section>
                     </x-slot>
 
@@ -613,17 +522,31 @@
                 },
 
                 apply() {
-                    const translatedData = this.translatedValues.map(item => ({
-                        field: item.fieldName,
-                        isTranslatable: item.isTranslatable,
-                        source: item.sourceData,
-                        translations: item.translatedData.map(translation => ({
-                            locale: translation.locale,
-                            content: translation.content
-                        })),
-                    }));
+                    if (! this.translatedValues.translated) {
+                        return;
+                    }
+
+                    let translatedData = [];
+
+                    Object.keys(this.translatedValues.fields).forEach(fieldName => {
+                        let fieldData = this.translatedValues.fields[fieldName];
+
+                        translatedData.push({
+                            field: fieldName,
+                            isTranslatable: fieldData.isTranslatable,
+                            source: fieldData.sourceData,
+
+                            translations: Object.keys(this.translatedValues.translated).map(locale => {
+                                return {
+                                    locale: locale,
+                                    content: this.translatedValues.translated[locale][fieldName].content,
+                                };
+                            })
+                        });
+                    });
 
                     const formData = new FormData(this.$refs.translationForm);
+
                     formData.append('resource_id', this.resourceId);
                     formData.append('resource_type', 'product');
                     formData.append('translatedData', JSON.stringify(translatedData));
