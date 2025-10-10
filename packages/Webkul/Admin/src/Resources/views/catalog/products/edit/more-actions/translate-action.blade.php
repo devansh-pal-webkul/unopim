@@ -37,7 +37,10 @@
             ref="translationForm"
         >
             <form @submit="handleSubmit($event, translate)" ref="translationForm">
-                <x-admin::modal ref="translationModal" @toggle="handleToggle">
+                <x-admin::modal
+                    ref="translationModal"
+                    @toggle="handleToggle"
+                >
                     <x-slot:header>
                         <p class="flex items-center text-lg text-gray-800 dark:text-white font-bold">
                             @lang('admin::app.catalog.products.edit.translate.title')
@@ -53,16 +56,16 @@
                                 </div>
     
                                 <div class="flex justify-around items-center text-center dark:text-slate-50">
-                                    <p class="text-sm" :class="currentStep === 1 ? 'text-violet-700' : ''"> Step 1 <br> Select Source</p>
-                                    <p class="text-sm" :class="currentStep === 2 ? 'text-violet-700' : ''"> Step 2 <br> Select Target</p>
+                                    <p class="text-sm" :class="currentStep === 1 ? 'text-violet-700' : ''">@lang('admin::app.catalog.products.edit.translate.step') 1 <br> @lang('admin::app.catalog.products.edit.translate.select-source')</p>
+                                    <p class="text-sm" :class="currentStep === 2 ? 'text-violet-700' : ''">@lang('admin::app.catalog.products.edit.translate.step') 2 <br> @lang('admin::app.catalog.products.edit.translate.select-target')</p>
                                 </div>
     
-                                Step 1: Select Source Channel, Language and Attributes
+                                @lang('admin::app.catalog.products.edit.translate.first-step-title')
                             </section>
     
                             <section class="bg-violet-50 dark:bg-cherry-800 rounded-md mb-2 p-3" id="step-1">
                                 <h3 class="dark:text-white mb-2 text-sm font-bold">
-                                    Source Content
+                                    @lang('admin::app.catalog.products.edit.translate.source-content')
                                 </h3>
     
                                 <!-- Source Channel -->
@@ -143,10 +146,10 @@
                             </section>
     
                             <template v-if="currentStep > 1">
-                                <h2 class="mt-6 mb-2 text-center">Step 2: Select Target Channel and Languages</h2>
+                                <h2 class="mt-6 mb-2 text-center">@lang('admin::app.catalog.products.edit.translate.second-step-title')</h2>
                                 <section class="bg-violet-50 dark:bg-cherry-800 rounded-md mb-2 p-3" id="step-2">
                                     <h3 class="dark:text-white mb-2 text-sm font-bold">
-                                        Target Content
+                                        @lang('admin::app.catalog.products.edit.translate.target-content')
                                     </h3>
     
                                     <x-admin::form.control-group>
@@ -185,24 +188,11 @@
                                     </x-admin::form.control-group>
                                 </section>
                             </template>
-    
-                            <x-admin::form.control-group class="mt-5" v-if="nothingToTranslate">
-                                <x-admin::form.control-group.label class="text-left">
-                                    @lang('admin::app.catalog.products.edit.translate.translated-content')
-                                </x-admin::form.control-group.label>
-    
-                                <x-admin::form.control-group.control
-                                    type="textarea"
-                                    class="h-[75px]"
-                                    name="content"
-                                    v-model="nothingToTranslate"
-                                />
-                            </x-admin::form.control-group>
                         </section>
 
                         <!-- Translated Content -->
                         <section class="right-column flex flex-col gap-2 w-full flex-2 max-xl:flex-auto" v-if="translatedValues">
-                            <h3 class="text-gray-800 dark:text-white font-medium">Translated Content</h3>
+                            <h3 class="text-gray-800 dark:text-white font-medium">@lang('admin::app.catalog.products.edit.translate.translated-content')</h3>
                             <table class="table-fixed border-4 border-violet-50 border-collapse w-full dark:border-cherry-700 dark:text-slate-50">
                                 <thead>
                                     <th
@@ -251,10 +241,10 @@
                                     class="secondary-button"
                                     @click="nextStep"
                                 >
-                                    Next
+                                    @lang('admin::app.catalog.products.edit.translate.next')
                                 </button>
                             </template>
-                            <template v-else-if="currentStep === 2 && ! translatedValues && ! nothingToTranslate">
+                            <template v-else-if="currentStep === 2 && ! translatedValues">
                                 <button
                                     type="button"
                                     class="secondary-button"
@@ -285,24 +275,13 @@
                                 </button>
                             </template>
 
-                            <template v-else>
+                            <template v-else-if="translatedValues">
                                 <button
-                                    v-if="translatedValues"
                                     type="button"
                                     class="primary-button"
-                                    :disabled="!translatedValues"
                                     @click="apply"
                                 >
                                     @lang('admin::app.catalog.products.edit.translate.apply')
-                                </button>
-
-                                <button
-                                    v-else-if="nothingToTranslate"
-                                    type="button"
-                                    class="secondary-button"
-                                    @click="cancel"
-                                >
-                                    @lang('admin::app.catalog.products.edit.translate.cancel')
                                 </button>
                             </template>
                         </div>
@@ -331,7 +310,6 @@
                     sourceData: null,
                     translatedValues: null,
                     isLoading: false,
-                    nothingToTranslate: '',
                     sourceLocale: this.localeValue,
                     sourceChannel: this.channelValue,
                     targetChannel: this.channelTarget,
@@ -509,7 +487,10 @@
 
                                 this.$emitter.emit('modal-size-change', 'full');
                             } else {
-                                this.nothingToTranslate = 'Data not available for translation in the source channel and locale';
+                                this.$emitter.emit('add-flash', {
+                                    type: 'warning',
+                                    message: '@lang("admin::app.catalog.products.edit.translate.empty-translation-data")'
+                                })
                             }
                         })
                         .catch((error) => {
@@ -572,7 +553,6 @@
                 resetForm() {
                     this.translatedValues = null;
                     this.localeOption = null;
-                    this.nothingToTranslate = null;
                     this.targetLocOptions = null;
                 },
                 nextStep(e) {

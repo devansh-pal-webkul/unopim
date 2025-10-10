@@ -77,212 +77,206 @@
                 ref="translationForm"
             >
                 <form @submit="handleSubmit($event, translate)" ref="translationForm">
-                    <x-admin::modal ref="translationModal">
-                        <!-- Modal Header -->
+                    <x-admin::modal ref="translationModal" @toggle="handleToggle">
                         <x-slot:header>
-                            <p class="flex  items-center text-lg text-gray-800 dark:text-white font-bold">
-                                <span class="icon-magic text-2xl text-gray-800"></span>
+                            <p class="flex items-center text-lg text-gray-800 dark:text-white font-bold">
                                 @lang('admin::app.catalog.products.edit.translate.title')
                             </p>
                         </x-slot>
-                        <!-- Modal Content -->
-
-                        <x-slot:content>
-                            <div class="grid grid-cols-2 gap-4" v-show="! translatedData && ! nothingToTranslate">
-                                <x-admin::form.control-group  >
-                                    <x-admin::form.control-group.label class="required">
-                                        @lang('admin::app.catalog.products.edit.translate.source-channel')
-                                    </x-admin::form.control-group.label>
-                                    @php
-                                        $channels = core()->getAllChannels();
-                                        $options = [];
-
-                                        foreach ($channels as $channel) {
-                                            $channelName = $channel->name;
-
-                                            $options[] = [
-                                                'id'    => $channel->code,
-                                                'label' => empty($channelName) ? "[$channel->code]" : $channelName,
-                                            ];
-                                        }
-
-                                        $optionsInJson = json_encode($options);
-                                    @endphp
-                                    <x-admin::form.control-group.control
-                                        type="select"
-                                        name="channel"
-                                        rules="required"
-                                        ::value="sourceChannel"
-                                        :options="$optionsInJson"
-                                        @input="getSourceLocale"
-                                    >
-                                    </x-admin::form.control-group.control>
-
-                                    <x-admin::form.control-group.error control-name="channel"></x-admin::form.control-group.error>
-                                </x-admin::form.control-group >
-
-                                <x-admin::form.control-group  >
-                                    <x-admin::form.control-group.label class="required">
-                                        @lang('admin::app.catalog.products.edit.translate.target-channel')
-                                    </x-admin::form.control-group.label>
-                                        
-                                    <x-admin::form.control-group.control
-                                        type="select"
-                                        name="targetChannel"
-                                        rules="required"
-                                        ::value="targetChannel"
-                                        :options="$optionsInJson"
-                                        @input="getTargetLocale"
-                                    >
-                                    </x-admin::form.control-group.control>
-
-                                    <x-admin::form.control-group.error control-name="targetChannel"></x-admin::form.control-group.error>
-                                </x-admin::form.control-group >
-
-                                <x-admin::form.control-group v-if="localeOption">
-                                    <x-admin::form.control-group.label class="required">
-                                        @lang('admin::app.catalog.products.edit.translate.locale')
-                                    </x-admin::form.control-group.label>
-
-                                    <x-admin::form.control-group.control
-                                        type="select"
-                                        name="locale"
-                                        rules="required"
-                                        ref="localeRef"
-                                        ::value="sourceLocale"
-                                        ::options="localeOption"
-                                        @input="resetTargetLocales"
-                                    >
-                                    </x-admin::form.control-group.control>
-
-                                    <x-admin::form.control-group.error control-name="locale"></x-admin::form.control-group.error>
-                                </x-admin::form.control-group >
-
-                                <x-admin::form.control-group v-if="targetLocOptions">
-                                    <x-admin::form.control-group.label class="required">
-                                        @lang('admin::app.catalog.products.edit.translate.target-locales')
-                                    </x-admin::form.control-group.label>
-                                    <x-admin::form.control-group.control
-                                        type="multiselect"
-                                        id="section"
-                                        ref="targetLocOptionsRef"
-                                        name="targetLocale"
-                                        rules="required"
-                                        ::value="targetLocales"
-                                        ::options="targetLocOptions"
-                                        track-by="id"
-                                        label-by="label"
-                                    >
-                                    </x-admin::form.control-group.control>
-
-                                    <x-admin::form.control-group.error control-name="targetLocale"></x-admin::form.control-group.error>
-                                </x-admin::form.control-group >
-                            </div>
-
-                            <!-- Generated Content -->
-                            <x-admin::form.control-group class="mt-5 flex flex-row gap-5" v-if="translatedData">
-                                <div class="w-full">
-                                    <x-admin::form.control-group.label class="flex items-center justify-center mb-4">
-                                        <p class="text-sm text-gray-800 dark:text-white font-bold">@lang('admin::app.catalog.products.edit.translate.source-content')</p>
-                                    </x-admin::form.control-group.label>
-
-                                    <div class="inline-flex justify-between w-full">
-                                        <x-admin::form.control-group.label class="text-left pr-2">
-                                            @{{field}}
-                                        </x-admin::form.control-group.label>
-                                            <div class="self-end mb-2 text-xs flex gap-1 items-center">
-                                                <span class="icon-channel uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border text- border-gray-200  text-gray-600 dark:!text-gray-600">
-                                                    @{{sourceChannel}}
-                                                </span>
-                                                <span class="icon-language uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border border-gray-200  text-gray-600 dark:!text-gray-600">
-                                                    @{{sourceLocale}}
-                                                </span>
-                                            </div>
+                        <x-slot:content class="flex gap-5 mt-3.5 max-xl:flex-wrap text-base dark:text-whi">
+                            <section class="left-column flex flex-col gap-2 flex-1/5" :class="currentStep === 3 ? '' : 'w-full'">
+                                <section class="grid gap-2 items-center justify-center modal-steps-section mb-4 dark:text-white">
+                                    <div class="flex justify-center items-center">
+                                        <div class="w-3 h-3 bg-violet-700 rounded-full"></div>
+                                        <hr class="w-[200px] dark:bg-cherry-600 h-1 border-0" :class="currentStep >= 2 ? 'bg-violet-700' : 'bg-violet-100'">
+                                        <div class="w-3 h-3 bg-violet-400 rounded-full" :class="currentStep >= 2 ? 'bg-violet-700' : 'bg-violet-400'"></div>
                                     </div>
-
-                                    <x-admin::form.control-group.control
-                                        type="text"
-                                        class="h-[30px]"
-                                        name="content"
-                                        v-model="sourceData"
-                                        readOnly
-                                        disabled
-                                        v-if="fieldType === 'text'"
-                                    />
-                                    <x-admin::form.control-group.control
-                                        type="textarea"
-                                        class="h-[75px]"
-                                        name="content"
-                                        v-model="sourceData"
-                                        readOnly
-                                        disabled
-                                        v-if="fieldType === 'textarea'"
-                                    />
-                                </div>
-                                <div class="w-full">
-                                    <x-admin::form.control-group.label class="flex items-center justify-center mb-4">
-                                        <p class="text-sm text-gray-800 dark:text-white font-bold">@lang('admin::app.catalog.products.edit.translate.translated-content')</p>
-                                    </x-admin::form.control-group.label>
-                                    <div class="inline-flex justify-between w-full">
-                                        <x-admin::form.control-group.label class="text-left">
-                                            @{{field}}
-                                        </x-admin::form.control-group.label>
-                                        <div class="self-end mb-2 text-xs flex gap-1 items-center">
-                                            <span class="icon-channel uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border text- border-gray-200 text-gray-600 dark:!text-gray-600">
-                                                @{{targetChannel}}
-                                            </span>
-                                        </div>
+        
+                                    <div class="flex justify-around items-center text-center dark:text-slate-50">
+                                        <p class="text-sm" :class="currentStep === 1 ? 'text-violet-700' : ''">@lang('admin::app.catalog.products.edit.translate.step') 1 <br> @lang('admin::app.catalog.products.edit.translate.select-source')</p>
+                                        <p class="text-sm" :class="currentStep === 2 ? 'text-violet-700' : ''">@lang('admin::app.catalog.products.edit.translate.step') 2 <br> @lang('admin::app.catalog.products.edit.translate.select-target')</p>
                                     </div>
-                                    <div class="overflow-y-auto h-40 space-y-4 border rounded-lg p-2">
-                                        <div v-for="(item, index) in translatedData"
-                                            :key="index"
-                                            class="flex flex-col space-y-0"
+        
+                                    @lang('admin::app.catalog.products.edit.translate.first-step-title')
+                                </section>
+        
+                                <section class="bg-violet-50 dark:bg-cherry-800 rounded-md mb-2 p-3" id="step-1">
+                                    <h3 class="dark:text-white mb-2 text-sm font-bold">
+                                        @lang('admin::app.catalog.products.edit.translate.source-content')
+                                    </h3>
+        
+                                    <!-- Source Channel -->
+                                    <x-admin::form.control-group>
+                                        <x-admin::form.control-group.label class="required">
+                                            @lang('admin::app.catalog.products.edit.translate.source-channel')
+                                        </x-admin::form.control-group.label>
+                                        @php
+                                            $channels = core()->getAllChannels();
+                                            $options = [];
+        
+                                            foreach ($channels as $channel) {
+                                                $channelName = $channel->name;
+        
+                                                $options[] = [
+                                                    'id'    => $channel->code,
+                                                    'label' => empty($channelName) ? "[$channel->code]" : $channelName,
+                                                ];
+                                            }
+        
+                                            $optionsInJson = json_encode($options);
+                                        @endphp
+                                        <x-admin::form.control-group.control
+                                            type="select"
+                                            name="channel"
+                                            rules="required"
+                                            ::value="sourceChannel"
+                                            :options="$optionsInJson"
+                                            @input="getSourceLocale"
+                                            ::disabled="currentStep > 2"
                                         >
-                                            <x-admin::form.control-group.label class="flex justify-end text-right mb-0">
-                                                <span class="icon-language uppercase box-shadow p-1 h-5 rounded-full bg-gray-100 border border-gray-200 text-gray-600 dark:!text-gray-600">
-                                                    @{{ item.locale }}
-                                                </span>
+                                        </x-admin::form.control-group.control>
+        
+                                        <x-admin::form.control-group.error control-name="channel"></x-admin::form.control-group.error>
+                                    </x-admin::form.control-group >
+        
+                                    <!-- Source Locale -->
+                                    <x-admin::form.control-group v-if="localeOption">
+                                        <x-admin::form.control-group.label class="required">
+                                            @lang('admin::app.catalog.products.edit.translate.locale')
+                                        </x-admin::form.control-group.label>
+        
+                                        <x-admin::form.control-group.control
+                                            type="select"
+                                            name="locale"
+                                            rules="required"
+                                            ref="localeRef"
+                                            ::value="sourceLocale"
+                                            ::options="localeOption"
+                                            @input="resetTargetLocales"
+                                            ::disabled="currentStep > 2"
+                                        >
+                                        </x-admin::form.control-group.control>
+        
+                                        <x-admin::form.control-group.error control-name="locale"></x-admin::form.control-group.error>
+                                    </x-admin::form.control-group >
+                                </section>
+        
+                                <template v-if="currentStep > 1">
+                                    <h2 class="mt-6 mb-2 text-center dark:text-white">@lang('admin::app.catalog.products.edit.translate.second-step-title')</h2>
+                                    <section class="bg-violet-50 dark:bg-cherry-800 rounded-md mb-2 p-3" id="step-2">
+                                        <h3 class="dark:text-white mb-2 text-sm font-bold">
+                                            @lang('admin::app.catalog.products.edit.translate.target-content')
+                                        </h3>
+        
+                                        <x-admin::form.control-group>
+                                            <x-admin::form.control-group.label class="required">
+                                                @lang('admin::app.catalog.products.edit.translate.target-channel')
                                             </x-admin::form.control-group.label>
                                             <x-admin::form.control-group.control
-                                                type="text"
-                                                class="h-[30px] w-full border-gray-300 rounded mt-0"
-                                                ::name="item.locale"
-                                                v-model="item.content"
-                                                v-if="fieldType === 'text'"
+                                                type="select"
+                                                name="targetChannel"
+                                                rules="required"
+                                                ::value="targetChannel"
+                                                :options="$optionsInJson"
+                                                @input="getTargetLocale"
+                                                ::disabled="currentStep > 2"
                                             />
+                                            <x-admin::form.control-group.error control-name="targetChannel" />
+                                        </x-admin::form.control-group>
+        
+                                        <x-admin::form.control-group v-if="targetLocOptions">
+                                            <x-admin::form.control-group.label class="required">
+                                                @lang('admin::app.catalog.products.edit.translate.target-locales')
+                                            </x-admin::form.control-group.label>
                                             <x-admin::form.control-group.control
-                                                type="textarea"
-                                                class="h-[75px] w-full border-gray-300 rounded mt-0"
-                                                ::name="item.locale"
-                                                v-model="item.content"
-                                                v-if="fieldType === 'textarea'"
+                                                type="multiselect"
+                                                id="section"
+                                                ref="targetLocOptionsRef"
+                                                name="targetLocale"
+                                                rules="required"
+                                                ::value="targetLocales"
+                                                ::options="targetLocOptions"
+                                                track-by="id"
+                                                label-by="label"
+                                                ::disabled="currentStep > 2"
                                             />
-                                        </div>
-                                    </div>
-                                </div>
-                            </x-admin::form.control-group>
+                                            <x-admin::form.control-group.error control-name="targetLocale" />
+                                        </x-admin::form.control-group>
+                                    </section>
+                                </template>
+                            </section>
 
-                            <x-admin::form.control-group class="mt-5" v-if="nothingToTranslate">
-                                <x-admin::form.control-group.label class="text-left">
-                                    @lang('admin::app.catalog.products.edit.translate.translated-content')
-                                </x-admin::form.control-group.label>
+                            <!-- Translated Content -->
+                            <section class="right-column flex flex-col gap-2 w-full flex-2 max-xl:flex-auto" v-if="translatedData">
+                                <h3 class="text-gray-800 dark:text-white font-medium">@lang('admin::app.catalog.products.edit.translate.translated-content')</h3>
+                                <table class="table-fixed border-4 border-violet-50 border-collapse w-full dark:border-cherry-700 dark:text-slate-50">
+                                    <thead>
+                                        
+                                        <th
+                                            class="font-semibold relative border border-white dark:bg-cherry-700 dark:border-cherry-800 bg-violet-50 text-center"
+                                            v-text="'Locale'"
+                                        ></th>
 
-                                <x-admin::form.control-group.control
-                                    type="textarea"
-                                    class="h-[75px]"
-                                    name="content"
-                                    v-model="nothingToTranslate"
-                                />
-                            </x-admin::form.control-group>
-
+                                        <th
+                                            class="font-semibold relative border border-white dark:bg-cherry-700 dark:border-cherry-800 bg-violet-50 text-center"
+                                            v-text="field"
+                                        ></th>
+                                    </thead>
+                                    <tbody ref="tbody">
+                                        <tr
+                                            class="border-b dark:border-cherry-700"
+                                            v-for="(data) in translatedData"
+                                        >
+                                            <td
+                                                class="bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
+                                            >
+                                                <span
+                                                    v-text="data.locale"
+                                                    class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all  focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
+                                                >
+                                                </span>
+                                            </td>
+                                            <td
+                                                class="bg-white dark:bg-cherry-800 border-r dark:border-cherry-700 p-2 text-sm text-gray-600 dark:text-gray-300"
+                                            >
+                                                <input
+                                                    :value="data.content"
+                                                    :type="fieldType == 'textarea' ? 'textarea' : 'text'"
+                                                    :name="field + '_' + locale"
+                                                    v-model="data.content"
+                                                    class="w-full h-full text-sm text-gray-600 dark:text-gray-300 transition-all focus:border-gray-400 dark:focus:border-gray-400 bg-transparent dark:border-gray-600"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </section>
                         </x-slot>
 
                         <x-slot:footer>
-                            <div class="flex gap-x-2.5 items-center text-base">
-                                <template v-if="! translatedData && ! nothingToTranslate">
+                            <div class="flex gap-x-2.5 items-center">
+                                <template v-if="currentStep === 1">
+                                    <button
+                                        type="button"
+                                        class="secondary-button"
+                                        @click="nextStep"
+                                    >
+                                        @lang('admin::app.catalog.products.edit.translate.next')
+                                    </button>
+                                </template>
+                                <template v-else-if="currentStep === 2 && ! translatedData">
+                                    <button
+                                        type="button"
+                                        class="secondary-button"
+                                        @click="cancel"
+                                        ::disabled="isLoading"
+                                    >
+                                        @lang('admin::app.catalog.products.edit.translate.cancel')
+                                    </button>
                                     <button
                                         type="submit"
-                                        class="secondary-button"
+                                        class="primary-button"
+                                        ::disabled="isLoading"
                                     >
                                         <!-- Spinner -->
                                         <template v-if="isLoading">
@@ -290,6 +284,7 @@
                                                 class="animate-spin h-5 w-5 text-violet-700"
                                                 src="{{ unopim_asset('images/spinner.svg') }}"
                                             />
+
                                             @lang('admin::app.catalog.products.edit.translate.translating')
                                         </template>
 
@@ -300,24 +295,13 @@
                                     </button>
                                 </template>
 
-                                <template v-else>
+                                <template v-else-if="translatedData">
                                     <button
-                                        v-if="translatedData"
                                         type="button"
                                         class="primary-button"
-                                        :disabled="!translatedData"
                                         @click="apply"
                                     >
                                         @lang('admin::app.catalog.products.edit.translate.apply')
-                                    </button>
-
-                                    <button
-                                        v-else-if="nothingToTranslate"
-                                        type="button"
-                                        class="secondary-button"
-                                        @click="cancel"
-                                    >
-                                        @lang('admin::app.catalog.products.edit.translate.cancel')
                                     </button>
                                 </template>
                             </div>
@@ -354,12 +338,12 @@
                     sourceData: null,
                     translatedData: null,
                     isLoading: false,
-                    nothingToTranslate: '',
                     sourceLocale: this.localeValue,
                     sourceChannel: this.channelValue,
                     targetChannel: this.channelTarget,
                     targetLocales: this.targetLocales,
                     fieldType: this.fieldType,
+                    currentStep: 1,
                 };
             },
 
@@ -495,7 +479,12 @@
                                 this.$axios.post("{{ route('admin.magic_ai.translate') }}", formData)
                                     .then((response) => {
                                         this.isLoading = false;
+
                                         this.translatedData = response.data.translatedData;
+
+                                        this.currentStep += 1;
+
+                                        this.$emitter.emit('modal-size-change', 'full');
                                     })
                                     .catch((error) => {
                                         console.error("Error in translation request:", error);
@@ -504,7 +493,11 @@
                                         }
                                     });
                             } else {
-                                this.nothingToTranslate = 'Data not available for translate on the basis of source channel and locale';
+                                this.$emitter.emit('add-flash', {
+                                    type: 'warning',
+                                    message: '@lang("admin::app.catalog.products.edit.translate.empty-translation-data")'
+                                })
+
                                 this.isLoading = false;
                             }
                         })
@@ -545,8 +538,19 @@
                 resetForm() {
                     this.translatedData = null;
                     this.localeOption = null;
-                    this.nothingToTranslate = null;
                     this.targetLocOptions = null;
+                },
+                nextStep(e) {
+                    e.stopPropagation();
+
+                    this.currentStep += 1;
+                },
+                handleToggle(params) {
+                    if (false === params?.isActive) {
+                        this.currentStep = 1;
+
+                        this.$emitter.emit('modal-size-change', 'medium');
+                    }
                 }
             }
         });
